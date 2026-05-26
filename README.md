@@ -1,16 +1,51 @@
-# React + Vite
+# VISION3D — Visor de modelos 3D
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Prototipo de visor de modelos 3D construido con React + React Three Fiber + Cloudinary.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 18** + **Vite**
+- **React Three Fiber** + **Drei** — renderizado 3D
+- **Cloudinary** — almacenamiento de archivos (plan gratuito: 25 GB)
+- **Vercel** — hosting gratuito
 
-## React Compiler
+## Configurar Cloudinary
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Crea una cuenta en https://cloudinary.com (gratis)
+2. En tu dashboard ve a **Settings → Upload → Upload presets**
+3. Crea un preset nuevo:
+   - Signing mode: **Unsigned**
+   - Resource type: **Raw** (importante para archivos 3D)
+4. Abre `src/cloudinary.js` y rellena:
 
-## Expanding the ESLint configuration
+```js
+const CLOUD_NAME = "tu_cloud_name";   // Panel principal de Cloudinary
+const UPLOAD_PRESET = "tu_preset";    // Nombre del preset que creaste
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Instalar y ejecutar
+
+```bash
+pnpm install
+pnpm dev
+```
+
+## Deploy en Vercel
+
+1. Sube el proyecto a GitHub
+2. Entra en https://vercel.com → New Project → importa el repo
+3. Framework: **Vite** (lo detecta automáticamente)
+4. Deploy → obtienes una URL pública que funciona en cualquier PC
+
+## Formatos soportados
+
+- `.glb` — recomendado (binario compacto)
+- `.gltf` — también funciona
+
+## Controles del visor
+
+| Acción | Gesto |
+|--------|-------|
+| Rotar | Click + arrastrar |
+| Zoom | Scroll |
+| Pan | Shift + arrastrar |
