@@ -1,21 +1,27 @@
 import { useState, useEffect, useRef } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Html } from "@react-three/drei";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import * as THREE from "three";
 
+function LoadingOverlay() {
+  return (
+    <Html center>
+      <div className="loader-3d">
+        <div className="spinner" style={{ width: 28, height: 28, marginBottom: 4 }} />
+        <span>Cargando modelo…</span>
+      </div>
+    </Html>
+  );
+}
+
 function centerObject(object) {
-  // Calcula la caja exacta del objeto con todos sus hijos
   const box = new THREE.Box3().setFromObject(object);
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-
-  // Mueve el objeto para que su centro quede exactamente en [0,0,0]
   object.position.set(-center.x, -center.y, -center.z);
-  // Escala para que quepa bien en la vista
-  const scale = 2.5 / maxDim;
-  object.scale.setScalar(scale);
+  object.scale.setScalar(2.5 / maxDim);
 }
 
 function centerGeometry(geo) {
@@ -24,7 +30,6 @@ function centerGeometry(geo) {
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-  // Centra la geometría directamente
   geo.translate(-center.x, -center.y, -center.z);
   return 2.5 / maxDim;
 }
@@ -32,13 +37,9 @@ function centerGeometry(geo) {
 function ModelGLTF({ url }) {
   const groupRef = useRef();
   const { scene } = useGLTF(url);
-
   useEffect(() => {
-    if (groupRef.current) {
-      centerObject(groupRef.current);
-    }
+    if (groupRef.current) centerObject(groupRef.current);
   }, [scene]);
-
   return (
     <group ref={groupRef}>
       <primitive object={scene} />
@@ -48,9 +49,12 @@ function ModelGLTF({ url }) {
 
 function ModelSTL({ url }) {
   const [mesh, setMesh] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setMesh(null);
     new STLLoader().load(
       url,
       (geo) => {
@@ -65,22 +69,30 @@ function ModelSTL({ url }) {
         m.castShadow = true;
         m.receiveShadow = true;
         setMesh(m);
+        setLoading(false);
       },
       undefined,
-      (err) => console.error("STL error:", err)
+      (err) => {
+        console.error("STL error:", err);
+        setLoading(false);
+      }
     );
     return () => { cancelled = true; };
   }, [url]);
 
+  if (loading) return <LoadingOverlay />;
   if (!mesh) return null;
   return <primitive object={mesh} />;
 }
 
 function ModelOBJ({ url }) {
   const [obj, setObj] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setObj(null);
     new OBJLoader().load(
       url,
       (object) => {
@@ -96,13 +108,18 @@ function ModelOBJ({ url }) {
         });
         centerObject(object);
         setObj(object);
+        setLoading(false);
       },
       undefined,
-      (err) => console.error("OBJ error:", err)
+      (err) => {
+        console.error("OBJ error:", err);
+        setLoading(false);
+      }
     );
     return () => { cancelled = true; };
   }, [url]);
 
+  if (loading) return <LoadingOverlay />;
   if (!obj) return null;
   return <primitive object={obj} />;
 }

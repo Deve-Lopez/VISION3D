@@ -5,10 +5,11 @@ export default function Loader3D() {
   return (
     <Html center>
       <div className="loader-3d">
-        <div className="loader-bar">
+        <div className="spinner" style={{ width: 28, height: 28, marginBottom: 4 }} />
+        <div className="loader-bar" style={{ width: 120 }}>
           <div className="loader-fill" style={{ width: `${progress}%` }} />
         </div>
-        <span>{Math.round(progress)}%</span>
+        <span>Cargando modelo… {Math.round(progress)}%</span>
       </div>
     </Html>
   );
