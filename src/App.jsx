@@ -4,7 +4,7 @@ import { OrbitControls, useGLTF, useProgress, Html, Grid, Environment } from "@r
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import * as THREE from "three";
-import { uploadToCloudinary } from "./cloudinary";
+import { uploadToStorage } from "./storage";
 import "./index.css";
 
 // ── Centra y escala cualquier objeto/geometría al viewport ──
@@ -129,18 +129,18 @@ const VALID_EXT = ["glb", "gltf", "stl", "obj"];
 export default function App() {
   // blobUrl = renderizado inmediato desde disco local
   // cloudUrl = URL permanente tras subida (para compartir)
-  const [blobUrl, setBlobUrl]           = useState(null);
-  const [modelExt, setModelExt]         = useState(null);
-  const [fileName, setFileName]         = useState(null);
-  const [uploading, setUploading]       = useState(false);
+  const [blobUrl, setBlobUrl] = useState(null);
+  const [modelExt, setModelExt] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadDone, setUploadDone]     = useState(false);
-  const [shareUrl, setShareUrl]         = useState(null);
-  const [error, setError]               = useState(null);
-  const [showGrid, setShowGrid]         = useState(true);
-  const [envPreset, setEnvPreset]       = useState("sunset");
-  const [bgColor, setBgColor]           = useState("#0f172a");
-  const [copied, setCopied]             = useState(false);
+  const [uploadDone, setUploadDone] = useState(false);
+  const [shareUrl, setShareUrl] = useState(null);
+  const [error, setError] = useState(null);
+  const [showGrid, setShowGrid] = useState(true);
+  const [envPreset, setEnvPreset] = useState("sunset");
+  const [bgColor, setBgColor] = useState("#0f172a");
+  const [copied, setCopied] = useState(false);
   const prevBlob = useRef(null);
   const inputRef = useRef();
 
@@ -164,11 +164,12 @@ export default function App() {
     setModelExt(ext);
     setFileName(file.name);
 
-    // 2. Subir a Cloudinary en segundo plano
+    // 2. Subir a Supabase en segundo plano
     setUploading(true);
-    setUploadProgress(0);
+    setUploadProgress(50);
     try {
-      const url = await uploadToCloudinary(file, (p) => setUploadProgress(p));
+      const url = await uploadToStorage(file);
+      setUploadProgress(100); // Al terminar va al 100%
       setShareUrl(url);
       setUploadDone(true);
     } catch (e) {
@@ -177,6 +178,7 @@ export default function App() {
     } finally {
       setUploading(false);
     }
+
   }
 
   function onDrop(e) {
@@ -227,17 +229,22 @@ export default function App() {
           </div>
         )}
 
+        {/* AHORA */}
         {uploadDone && shareUrl && (
-          <div className="share-box">
-            <p className="share-label">URL para compartir</p>
-            <div className="share-row">
-              <span className="share-url">{shareUrl.slice(0, 32)}…</span>
-              <button className="copy-btn" onClick={copyShareUrl}>
-                {copied ? "✓" : "Copiar"}
-              </button>
-            </div>
-          </div>
-        )}
+  <div className="share-box">
+    <p className="share-label">¡Modelo guardado en la nube!</p>
+    <div className="share-row">
+      {/* Eliminamos el <span> que mostraba la URL fea */}
+      <button 
+        className="copy-btn" 
+        onClick={copyShareUrl} 
+        style={{ width: '100%', padding: '10px', background: '#3b82f6', color: 'white', borderRadius: '6px' }}
+      >
+        {copied ? "✓ ¡Enlace copiado al portapapeles!" : "🔗 Copiar enlace para compartir"}
+      </button>
+    </div>
+  </div>
+)}
 
         {error && <p className="error-msg">{error}</p>}
 
