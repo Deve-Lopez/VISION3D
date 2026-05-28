@@ -33,3 +33,39 @@ export async function uploadToStorage(file) {
 
   return publicUrlData.publicUrl;
 }
+
+// ── NUEVA FUNCIÓN: TRAER LOS MODELOS GUARDADOS ──
+export async function listModelsFromStorage() {
+  const { data, error } = await supabase.storage
+    .from('models3d')
+    .list('', {
+      limit: 100,
+      sortBy: { column: 'created_at', order: 'desc' } // Trae los más nuevos primero
+    });
+
+  if (error) {
+    throw new Error(`Error al listar Supabase: ${error.message}`);
+  }
+
+  // Mapeamos los archivos para limpiar el nombre y construir su URL pública
+  return data
+  .filter(file => file.name !== '.emptyFolderPlaceholder') // ← añade esto
+  .map(file => {
+    const { data: publicUrlData } = supabase.storage
+      .from('models3d')
+      .getPublicUrl(file.name);
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    
+    const cleanName = file.name.includes('_') 
+      ? file.name.split('_').slice(1).join('_') 
+      : file.name;
+
+    return {
+      id: file.id,
+      name: cleanName,
+      url: publicUrlData.publicUrl,
+      ext: ext
+    };
+  });
+}
