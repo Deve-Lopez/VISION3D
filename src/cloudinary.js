@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────
 
 const CLOUD_NAME = "dndeygffc";   // ← reemplaza esto
-const UPLOAD_PRESET = "mi_preset_app";    // ← reemplaza esto
+const UPLOAD_PRESET = "sdfgggvvs";    // ← reemplaza esto
 
 // ─────────────────────────────────────────────────────────────
 
