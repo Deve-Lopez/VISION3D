@@ -6,8 +6,8 @@
 //  3. Copia tu Cloud Name y el nombre del preset aquí:
 // ─────────────────────────────────────────────────────────────
 
-const CLOUD_NAME = "TU_CLOUD_NAME";   // ← reemplaza esto
-const UPLOAD_PRESET = "TU_PRESET";    // ← reemplaza esto
+const CLOUD_NAME = "dndeygffc";   // ← reemplaza esto
+const UPLOAD_PRESET = "mi_preset_app";    // ← reemplaza esto
 
 // ─────────────────────────────────────────────────────────────
 
