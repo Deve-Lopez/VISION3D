@@ -24,15 +24,25 @@ function Controls() {
       controls.update();
     };
 
+    // Eventos del mouse
     gl.domElement.addEventListener("mousemove", animate);
     gl.domElement.addEventListener("mousedown", animate);
     gl.domElement.addEventListener("wheel", animate);
+
+    // Eventos del touch (móvil)
+    gl.domElement.addEventListener("touchstart", animate, { passive: false});
+    gl.domElement.addEventListener("touchmove", animate, { passive: false});
+    gl.domElement.addEventListener("touchend", animate);
 
     return () => {
       controls.dispose();
       gl.domElement.removeEventListener("mousemove", animate);
       gl.domElement.removeEventListener("mousedown", animate);
       gl.domElement.removeEventListener("wheel", animate);
+      gl.domElement.removeEventListener("touchstart", animate);
+      gl.domElement.removeEventListener("touchmove", animate);
+      gl.domElement.removeEventListener("touchend", animate);
+
     };
   }, [camera, gl]);
 
