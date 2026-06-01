@@ -3,13 +3,14 @@ import Sidebar from "./Sidebar";
 import Viewer3D from "./Viewer3D";
 
 export default function Dashboard() {
-  const [blobUrl, setBlobUrl]   = useState(null);
-  const [modelExt, setModelExt] = useState(null);
-  const [fileName, setFileName] = useState(null);
-  const [error, setError]       = useState(null);
-  const [showGrid, setShowGrid] = useState(true);
+  const [blobUrl, setBlobUrl]     = useState(null);
+  const [modelExt, setModelExt]   = useState(null);
+  const [fileName, setFileName]   = useState(null);
+  const [error, setError]         = useState(null);
+  const [showGrid, setShowGrid]   = useState(true);
+  const [showWireframe, setShowWireframe] = useState(false);
   const [envPreset, setEnvPreset] = useState("sunset");
-  const [bgColor, setBgColor]   = useState("#0f172a");
+  const [bgColor, setBgColor]     = useState("#0f172a");
   const prevBlob = useRef(null);
 
   const [uploading, setUploading] = useState(false);
@@ -17,7 +18,7 @@ export default function Dashboard() {
 
   return (
     <div className="app">
-      <Sidebar 
+      <Sidebar
         fileName={fileName}
         error={error}
         setError={setError}
@@ -27,6 +28,8 @@ export default function Dashboard() {
         prevBlob={prevBlob}
         showGrid={showGrid}
         setShowGrid={setShowGrid}
+        showWireframe={showWireframe}
+        setShowWireframe={setShowWireframe}
         bgColor={bgColor}
         setBgColor={setBgColor}
         envPreset={envPreset}
@@ -35,11 +38,11 @@ export default function Dashboard() {
         setUploading={setUploading}
         setShareUrl={setShareUrl}
       />
-
-      <Viewer3D 
+      <Viewer3D
         modelUrl={blobUrl}
         modelExt={modelExt}
         showGrid={showGrid}
+        showWireframe={showWireframe}
         envPreset={envPreset}
         bgColor={bgColor}
       />

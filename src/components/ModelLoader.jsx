@@ -34,12 +34,52 @@ function centerGeometry(geo) {
   return 2.5 / maxDim;
 }
 
-function ModelGLTF({ url }) {
+// ── FUNCIÓN AUXILIAR PARA CONTAR POLÍGONOS Y VÉRTICES ──
+function calculateStats(object) {
+  let vertices = 0;
+  let polygons = 0;
+
+  object.traverse((child) => {
+    if (child.isMesh) {
+      const geometry = child.geometry;
+      if (geometry) {
+        const position = geometry.attributes.position;
+        if (position) {
+          vertices += position.count;
+          
+          // Si tiene un archivo de índices indexado
+          if (geometry.index) {
+            polygons += geometry.index.count / 3;
+          } else {
+            polygons += position.count / 3;
+          }
+        }
+      }
+    }
+  });
+
+  
+
+  return { 
+    vertices: vertices.toLocaleString(), 
+    polygons: Math.round(polygons).toLocaleString() 
+  };
+}
+
+// ── COMPONENTES MODIFICADOS PARA ENVIAR STATS ──
+
+function ModelGLTF({ url, onStats }) {
   const groupRef = useRef();
-  const { scene } = useGLTF(url);
+  // Incluye soporte para compresión draco de una vez
+  const { scene } = useGLTF(url, 'https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
+  
   useEffect(() => {
-    if (groupRef.current) centerObject(groupRef.current);
-  }, [scene]);
+    if (groupRef.current) {
+      centerObject(groupRef.current);
+      if (onStats) onStats(calculateStats(groupRef.current));
+    }
+  }, [scene, onStats]);
+
   return (
     <group ref={groupRef}>
       <primitive object={scene} />
@@ -47,7 +87,7 @@ function ModelGLTF({ url }) {
   );
 }
 
-function ModelSTL({ url }) {
+function ModelSTL({ url, onStats }) {
   const [mesh, setMesh] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,8 +108,18 @@ function ModelSTL({ url }) {
         m.scale.setScalar(scale);
         m.castShadow = true;
         m.receiveShadow = true;
+        
         setMesh(m);
         setLoading(false);
+
+        // Envío de estadísticas para STL
+        if (onStats) {
+          const vCount = geo.attributes.position ? geo.attributes.position.count : 0;
+          onStats({
+            vertices: vCount.toLocaleString(),
+            polygons: Math.round(vCount / 3).toLocaleString()
+          });
+        }
       },
       undefined,
       (err) => {
@@ -78,14 +128,14 @@ function ModelSTL({ url }) {
       }
     );
     return () => { cancelled = true; };
-  }, [url]);
+  }, [url, onStats]);
 
   if (loading) return <LoadingOverlay />;
   if (!mesh) return null;
   return <primitive object={mesh} />;
 }
 
-function ModelOBJ({ url }) {
+function ModelOBJ({ url, onStats }) {
   const [obj, setObj] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -109,6 +159,8 @@ function ModelOBJ({ url }) {
         centerObject(object);
         setObj(object);
         setLoading(false);
+        
+        if (onStats) onStats(calculateStats(object));
       },
       undefined,
       (err) => {
@@ -117,15 +169,16 @@ function ModelOBJ({ url }) {
       }
     );
     return () => { cancelled = true; };
-  }, [url]);
+  }, [url, onStats]);
 
   if (loading) return <LoadingOverlay />;
   if (!obj) return null;
   return <primitive object={obj} />;
 }
 
-export default function ModelLoader({ url, ext }) {
-  if (ext === "stl") return <ModelSTL url={url} />;
-  if (ext === "obj") return <ModelOBJ url={url} />;
-  return <ModelGLTF url={url} />;
+// ── EXPORTACIÓN PRINCIPAL COHESIONADA ──
+export default function ModelLoader({ url, ext, onStats }) {
+  if (ext === "stl") return <ModelSTL url={url} onStats={onStats} />;
+  if (ext === "obj") return <ModelOBJ url={url} onStats={onStats} />;
+  return <ModelGLTF url={url} onStats={onStats} />;
 }

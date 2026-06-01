@@ -1,22 +1,19 @@
 import { useRef, useState, useEffect } from "react";
-// 1. Importamos ambas funciones desde tu storage.js
-import { uploadToStorage, listModelsFromStorage } from "../storage"; 
+import { uploadToStorage, listModelsFromStorage } from "../storage";
 
 const ENV_PRESETS = ["sunset", "dawn", "night", "warehouse", "forest", "apartment", "studio", "city", "lobby"];
 const VALID_EXT = ["glb", "gltf", "stl", "obj"];
 
-export default function Sidebar({ 
+export default function Sidebar({
   fileName, error, setError, setBlobUrl, setModelExt, setFileName, prevBlob,
-  showGrid, setShowGrid, bgColor, setBgColor, envPreset, setEnvPreset,
+  showGrid, setShowGrid, showWireframe, setShowWireframe,
+  bgColor, setBgColor, envPreset, setEnvPreset,
   uploading, setUploading, setShareUrl
 }) {
   const inputRef = useRef();
-  
-  // Estados nuevos para controlar la lista de la nube
   const [cloudModels, setCloudModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
-  // Función para pedirle los modelos a Supabase y actualizar el estado
   async function fetchCloudModels() {
     setLoadingModels(true);
     try {
@@ -29,7 +26,6 @@ export default function Sidebar({
     }
   }
 
-  // Se ejecuta automáticamente solo una vez al abrir la aplicación
   useEffect(() => {
     fetchCloudModels();
   }, []);
@@ -41,24 +37,23 @@ export default function Sidebar({
       setError("Solo se admiten .glb, .gltf, .stl y .obj");
       return;
     }
-
     if (prevBlob.current) URL.revokeObjectURL(prevBlob.current);
     const localUrl = URL.createObjectURL(file);
     prevBlob.current = localUrl;
-
     setError(null);
     setBlobUrl(localUrl);
     setModelExt(ext);
     setFileName(file.name);
-
     if (uploading) return;
     setUploading(true);
-    
     try {
-      const url = await uploadToStorage(file); 
-      setShareUrl(url); 
-      // Al subirse con éxito en las sombras, actualizamos la lista
-      fetchCloudModels();
+      const { url, local } = await uploadToStorage(file);
+      setShareUrl(url);
+      if (local) {
+        console.info("Modelo cargado localmente (más de 50MB, no guardado en la nube)");
+      } else {
+        fetchCloudModels();
+      }
     } catch (e) {
       console.error("Error en backup silencioso:", e.message);
     } finally {
@@ -71,10 +66,9 @@ export default function Sidebar({
     handleFile(e.dataTransfer.files[0]);
   }
 
-  // Al hacer clic en cualquier modelo de la lista de Supabase
   function handleSelectCloudModel(model) {
     setError(null);
-    setBlobUrl(model.url); // Le pasamos la URL pública de Supabase al visor
+    setBlobUrl(model.url);
     setModelExt(model.ext);
     setFileName(model.name);
   }
@@ -86,7 +80,6 @@ export default function Sidebar({
         <span className="logo-text">VISION3D</span>
       </div>
 
-      {/* Drop zone */}
       <div className="drop-zone" onDrop={onDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current.click()}>
         <input ref={inputRef} type="file" accept=".glb,.gltf,.stl,.obj" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
         <div className="drop-icon">⬆</div>
@@ -97,7 +90,6 @@ export default function Sidebar({
 
       {error && <p className="error-msg">{error}</p>}
 
-      {/* APARTADO NUEVO: LISTADO DE MODELOS DESDE SUPABASE */}
       <div className="controls-section" style={{ marginTop: "16px" }}>
         <p className="section-label">Modelos en la nube</p>
         {loadingModels ? (
@@ -132,12 +124,17 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* Secciones de control normales de la escena */}
       <div className="controls-section" style={{ marginTop: "16px" }}>
         <p className="section-label">Escena</p>
         <label className="control-row">
           <span>Cuadrícula</span>
           <button className={`toggle ${showGrid ? "on" : ""}`} onClick={() => setShowGrid(v => !v)}>
+            <span className="toggle-knob" />
+          </button>
+        </label>
+        <label className="control-row">
+          <span>Malla</span>
+          <button className={`toggle ${showWireframe ? "on" : ""}`} onClick={() => setShowWireframe(v => !v)}>
             <span className="toggle-knob" />
           </button>
         </label>
