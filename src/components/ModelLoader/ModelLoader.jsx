@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useGLTF, Html } from "@react-three/drei";
+import styles from "./ModelLoader.module.css"
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import * as THREE from "three";
@@ -7,78 +8,86 @@ import * as THREE from "three";
 function LoadingOverlay() {
   return (
     <Html center>
-      <div className="loader-3d">
-        <div className="spinner" style={{ width: 28, height: 28, marginBottom: 4 }} />
+      <div className={styles.loader3d}>
+        <div className={styles.spinner} />
         <span>Cargando modelo…</span>
       </div>
     </Html>
   );
 }
 
-function centerObject(object) {
+// ── FUNCIÓN UNIFICADA: centra y escala cualquier Object3D ──
+function normalizeObject(object) {
+  // Paso 1: computar bounding box del objeto TAL COMO ESTÁ
   const box = new THREE.Box3().setFromObject(object);
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
+
+  // Paso 2: centrar desplazando la posición (no la geometría)
+  object.position.sub(center);
+
+  // Paso 3: escalar uniformemente para que quepa en un cubo 2.5
   const maxDim = Math.max(size.x, size.y, size.z);
-  object.position.set(-center.x, -center.y, -center.z);
-  object.scale.setScalar(2.5 / maxDim);
+  if (maxDim > 0) {
+    object.scale.multiplyScalar(2.5 / maxDim);
+  }
 }
 
-function centerGeometry(geo) {
+// ── FUNCIÓN UNIFICADA: centra y escala una geometría (STL) ──
+function normalizeGeometry(geo) {
   geo.computeBoundingBox();
   const box = geo.boundingBox;
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
+
+  // Mover la geometría al origen
   geo.translate(-center.x, -center.y, -center.z);
-  return 2.5 / maxDim;
+
+  // Devolver el factor de escala uniforme
+  return maxDim > 0 ? 2.5 / maxDim : 1;
 }
 
-// ── FUNCIÓN AUXILIAR PARA CONTAR POLÍGONOS Y VÉRTICES ──
+// ── ESTADÍSTICAS ──
 function calculateStats(object) {
   let vertices = 0;
   let polygons = 0;
-
   object.traverse((child) => {
-    if (child.isMesh) {
-      const geometry = child.geometry;
-      if (geometry) {
-        const position = geometry.attributes.position;
-        if (position) {
-          vertices += position.count;
-          
-          // Si tiene un archivo de índices indexado
-          if (geometry.index) {
-            polygons += geometry.index.count / 3;
-          } else {
-            polygons += position.count / 3;
-          }
-        }
+    if (child.isMesh && child.geometry) {
+      const pos = child.geometry.attributes.position;
+      if (pos) {
+        vertices += pos.count;
+        polygons += child.geometry.index
+          ? child.geometry.index.count / 3
+          : pos.count / 3;
       }
     }
   });
-
-  
-
-  return { 
-    vertices: vertices.toLocaleString(), 
-    polygons: Math.round(polygons).toLocaleString() 
+  return {
+    vertices: vertices.toLocaleString(),
+    polygons: Math.round(polygons).toLocaleString(),
   };
 }
 
-// ── COMPONENTES MODIFICADOS PARA ENVIAR STATS ──
-
+// ── GLTF ──
 function ModelGLTF({ url, onStats }) {
   const groupRef = useRef();
-  // Incluye soporte para compresión draco de una vez
-  const { scene } = useGLTF(url, 'https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
-  
-  useEffect(() => {
-    if (groupRef.current) {
-      centerObject(groupRef.current);
+  const { scene } = useGLTF(url, "https://www.gstatic.com/draco/versioned/decoders/1.5.5/");
+  const normalized = useRef(false);
+
+  // useLayoutEffect garantiza que el subtree ya está montado antes de leer Box3
+  useLayoutEffect(() => {
+    if (groupRef.current && !normalized.current) {
+      normalized.current = true;
+      normalizeObject(groupRef.current);
       if (onStats) onStats(calculateStats(groupRef.current));
     }
   }, [scene, onStats]);
+
+  // Reset cuando cambia la URL
+  useEffect(() => {
+    normalized.current = false;
+  }, [url]);
 
   return (
     <group ref={groupRef}>
@@ -87,6 +96,7 @@ function ModelGLTF({ url, onStats }) {
   );
 }
 
+// ── STL ──
 function ModelSTL({ url, onStats }) {
   const [mesh, setMesh] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -95,29 +105,35 @@ function ModelSTL({ url, onStats }) {
     let cancelled = false;
     setLoading(true);
     setMesh(null);
+
     new STLLoader().load(
       url,
       (geo) => {
         if (cancelled) return;
         geo.computeVertexNormals();
-        const scale = centerGeometry(geo);
+
+        // normalizeGeometry centra la geo y devuelve el factor de escala
+        const scale = normalizeGeometry(geo);
+
         const m = new THREE.Mesh(
           geo,
           new THREE.MeshStandardMaterial({ color: "#8ecae6", metalness: 0.3, roughness: 0.5 })
         );
+        // Aplicar escala al mesh (la geo ya está centrada en su origen)
         m.scale.setScalar(scale);
         m.castShadow = true;
         m.receiveShadow = true;
-        
+        // Posición explícita en el origen
+        m.position.set(0, 0, 0);
+
         setMesh(m);
         setLoading(false);
 
-        // Envío de estadísticas para STL
         if (onStats) {
-          const vCount = geo.attributes.position ? geo.attributes.position.count : 0;
+          const vCount = geo.attributes.position?.count ?? 0;
           onStats({
             vertices: vCount.toLocaleString(),
-            polygons: Math.round(vCount / 3).toLocaleString()
+            polygons: Math.round(vCount / 3).toLocaleString(),
           });
         }
       },
@@ -135,6 +151,7 @@ function ModelSTL({ url, onStats }) {
   return <primitive object={mesh} />;
 }
 
+// ── OBJ ──
 function ModelOBJ({ url, onStats }) {
   const [obj, setObj] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -143,6 +160,7 @@ function ModelOBJ({ url, onStats }) {
     let cancelled = false;
     setLoading(true);
     setObj(null);
+
     new OBJLoader().load(
       url,
       (object) => {
@@ -156,10 +174,13 @@ function ModelOBJ({ url, onStats }) {
             });
           }
         });
-        centerObject(object);
+
+        // Normalizar DESPUÉS de asignar materiales (algunos OBJ tienen
+        // transformaciones internas que afectan el Box3)
+        normalizeObject(object);
+
         setObj(object);
         setLoading(false);
-        
         if (onStats) onStats(calculateStats(object));
       },
       undefined,
@@ -176,7 +197,7 @@ function ModelOBJ({ url, onStats }) {
   return <primitive object={obj} />;
 }
 
-// ── EXPORTACIÓN PRINCIPAL COHESIONADA ──
+// ── EXPORT ──
 export default function ModelLoader({ url, ext, onStats }) {
   if (ext === "stl") return <ModelSTL url={url} onStats={onStats} />;
   if (ext === "obj") return <ModelOBJ url={url} onStats={onStats} />;

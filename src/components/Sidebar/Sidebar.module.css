@@ -1,0 +1,240 @@
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logoIcon {
+  font-size: 20px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.logoText {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text);
+}
+
+.dropZone {
+  margin: 14px 12px;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dropZone:hover {
+  border-color: var(--accent);
+  background: rgba(110, 231, 183, 0.04);
+}
+
+.dropIcon {
+  font-size: 22px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.dropTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.dropSub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dropFile {
+  font-size: 11px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  word-break: break-all;
+  margin-top: 4px;
+}
+
+.errorMsg {
+  margin: 0 12px 8px;
+  font-size: 12px;
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+.controlsSection {
+  padding: 4px 12px 16px;
+  flex: 1;
+}
+
+.mtMd {
+  margin-top: 16px;
+}
+
+.sectionLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 14px 0 8px;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.toggle {
+  width: 36px;
+  height: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle.on .toggleKnob {
+  transform: translateX(16px);
+}
+
+.colorPick {
+  width: 28px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  padding: 1px;
+}
+
+.envGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.envBtn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: lowercase;
+}
+
+.envBtn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.envBtn.active {
+  background: rgba(110, 231, 183, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cloudList {
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface2);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.cloudItem {
+  text-align: left;
+  background: var(--bg);
+  color: var(--muted);
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cloudItem:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.cloudItem.active {
+  background: var(--accent2);
+  color: #ffffff;
+}
+
+.footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.footer p {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.6;
+}

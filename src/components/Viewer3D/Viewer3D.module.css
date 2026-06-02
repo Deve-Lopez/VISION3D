@@ -1,0 +1,61 @@
+.canvasWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.canvasWrap canvas {
+  display: block;
+}
+
+.emptyState {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  color: rgba(100, 116, 139, 0.25);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.emptyState p {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(100, 116, 139, 0.4);
+  letter-spacing: 0.08em;
+}
+
+.statsHud {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.statsCount {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}

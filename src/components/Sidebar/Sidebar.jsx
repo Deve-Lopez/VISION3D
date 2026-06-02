@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from "react";
-import { uploadToStorage, listModelsFromStorage } from "../storage";
+import { uploadToStorage, listModelsFromStorage } from "../../storage";
+// Importamos el módulo de estilos
+import styles from "./Sidebar.module.css";
 
 const ENV_PRESETS = ["sunset", "dawn", "night", "warehouse", "forest", "apartment", "studio", "city", "lobby"];
 const VALID_EXT = ["glb", "gltf", "stl", "obj"];
@@ -74,48 +76,35 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo">
-        <span className="logo-icon">◈</span>
-        <span className="logo-text">VISION3D</span>
+    <aside className={styles.sidebar}>
+      <div className={styles.logo}>
+        <span className={styles.logoIcon}>◈</span>
+        <span className={styles.logoText}>VISION3D</span>
       </div>
 
-      <div className="drop-zone" onDrop={onDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current.click()}>
+      <div className={styles.dropZone} onDrop={onDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current.click()}>
         <input ref={inputRef} type="file" accept=".glb,.gltf,.stl,.obj" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
-        <div className="drop-icon">⬆</div>
-        <p className="drop-title">Arrastra tu modelo</p>
-        <p className="drop-sub">.glb · .gltf · .stl · .obj</p>
-        {fileName && <p className="drop-file">✓ {fileName}</p>}
+        <div className={styles.dropIcon}>⬆</div>
+        <p className={styles.dropTitle}>Arrastra tu modelo</p>
+        <p className={styles.dropSub}>.glb · .gltf · .stl · .obj</p>
+        {fileName && <p className={styles.dropFile}>✓ {fileName}</p>}
       </div>
 
-      {error && <p className="error-msg">{error}</p>}
+      {error && <p className={styles.errorMsg}>{error}</p>}
 
-      <div className="controls-section" style={{ marginTop: "16px" }}>
-        <p className="section-label">Modelos en la nube</p>
+      <div className={`${styles.controlsSection} ${styles.mtMd}`}>
+        <p className={styles.sectionLabel}>Modelos en la nube</p>
         {loadingModels ? (
-          <p style={{ fontSize: "12px", color: "#64748b" }}>Conectando con la nube...</p>
+          <p className={styles.dropSub}>Conectando con la nube...</p>
         ) : cloudModels.length === 0 ? (
-          <p style={{ fontSize: "12px", color: "#64748b" }}>No hay modelos guardados.</p>
+          <p className={styles.dropSub}>No hay modelos guardados.</p>
         ) : (
-          <div className="cloud-list" style={{ maxHeight: "160px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "6px", background: "#1e293b", padding: "8px", borderRadius: "6px" }}>
+          <div className={styles.cloudList}>
             {cloudModels.map((model) => (
               <button
                 key={model.id}
                 onClick={() => handleSelectCloudModel(model)}
-                style={{
-                  textAlign: "left",
-                  background: fileName === model.name ? "#3b82f6" : "#0f172a",
-                  color: fileName === model.name ? "white" : "#94a3b8",
-                  border: "none",
-                  padding: "8px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  transition: "background 0.2s"
-                }}
+                className={`${styles.cloudItem} ${fileName === model.name ? styles.active : ""}`}
               >
                 📦 {model.name}
               </button>
@@ -124,33 +113,41 @@ export default function Sidebar({
         )}
       </div>
 
-      <div className="controls-section" style={{ marginTop: "16px" }}>
-        <p className="section-label">Escena</p>
-        <label className="control-row">
+      <div className={`${styles.controlsSection} ${styles.mtMd}`}>
+        <p className={styles.sectionLabel}>Escena</p>
+
+        {/* CONTROL: Cuadrícula */}
+        <label className={styles.controlRow}>
           <span>Cuadrícula</span>
-          <button className={`toggle ${showGrid ? "on" : ""}`} onClick={() => setShowGrid(v => !v)}>
-            <span className="toggle-knob" />
+          {/* Aquí usamos showGrid y setShowGrid */}
+          <button className={`${styles.toggle} ${showGrid ? styles.on : ""}`} onClick={() => setShowGrid(v => !v)}>
+            <span className={styles.toggleKnob} />
           </button>
         </label>
-        <label className="control-row">
+
+        {/* CONTROL: Malla (REVISA ESTO) */}
+        <label className={styles.controlRow}>
           <span>Malla</span>
-          <button className={`toggle ${showWireframe ? "on" : ""}`} onClick={() => setShowWireframe(v => !v)}>
-            <span className="toggle-knob" />
+          {/* CORRECCIÓN: Aquí DEBE usar showWireframe y setShowWireframe */}
+          <button className={`${styles.toggle} ${showWireframe ? styles.on : ""}`} onClick={() => setShowWireframe(v => !v)}>
+            <span className={styles.toggleKnob} />
           </button>
         </label>
-        <label className="control-row">
+
+        {/* CONTROL: Fondo */}
+        <label className={styles.controlRow}>
           <span>Fondo</span>
-          <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="color-pick" />
+          <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className={styles.colorPick} />
         </label>
-        <p className="section-label" style={{ marginTop: "16px" }}>Entorno</p>
-        <div className="env-grid">
+
+        <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Entorno</p>
+        <div className={styles.envGrid}>
           {ENV_PRESETS.map((p) => (
-            <button key={p} className={`env-btn ${envPreset === p ? "active" : ""}`} onClick={() => setEnvPreset(p)}>{p}</button>
+            <button key={p} className={`${styles.envBtn} ${envPreset === p ? styles.active : ""}`} onClick={() => setEnvPreset(p)}>{p}</button>
           ))}
         </div>
       </div>
-
-      <div className="sidebar-footer">
+      <div className={styles.footer}>
         <p>Clic · Rotar libre · Scroll zoom · Clic derecho · Pan</p>
       </div>
     </aside>

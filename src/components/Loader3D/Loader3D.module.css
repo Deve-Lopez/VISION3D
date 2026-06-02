@@ -1,0 +1,47 @@
+.loader3d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(11, 17, 32, 0.85);
+  border: 1px solid rgba(110, 231, 183, 0.2);
+  border-radius: 10px;
+  padding: 16px 24px;
+  backdrop-filter: blur(10px);
+  min-width: 140px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent2);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loaderBar {
+  width: 120px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loaderFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s;
+}
+
+.loader3d span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
+}

@@ -1,13 +1,14 @@
 import { Html, useProgress } from "@react-three/drei";
+import styles from "./Loader3D.module.css";
 
 export default function Loader3D() {
   const { progress } = useProgress();
   return (
     <Html center>
-      <div className="loader-3d">
-        <div className="spinner" style={{ width: 28, height: 28, marginBottom: 4 }} />
-        <div className="loader-bar" style={{ width: 120 }}>
-          <div className="loader-fill" style={{ width: `${progress}%` }} />
+      <div className={styles.loader3d}>
+        <div className={styles.spinner} />
+        <div className={styles.loaderBar}>
+          <div className={styles.loaderFill} style={{ width: `${progress}%` }} />
         </div>
         <span>Cargando modelo… {Math.round(progress)}%</span>
       </div>
