@@ -1,7 +1,15 @@
 .appDashboard {
   display: flex;
+  flex-direction: row; /* Escritorio: uno al lado del otro */
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background-color: var(--bg);
+}
+
+/* 📱 Soportes móviles y tablets en vertical */
+@media (max-width: 768px) {
+  .appDashboard {
+    flex-direction: column-reverse; /* El visor arriba para tocarlo fácil, el menú abajo */
+  }
 }

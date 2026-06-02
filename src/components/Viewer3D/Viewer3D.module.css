@@ -1,8 +1,8 @@
 .canvasWrap {
-  flex: 1;
+  flex: 1; /* Ocupa todo el espacio restante */
   position: relative;
   overflow: hidden;
-  transition: background 0.3s;
+  height: 100%; /* Se adapta tanto al 100vh de escritorio como al 60vh de móvil */
 }
 
 .canvasWrap canvas {
@@ -24,7 +24,6 @@
 .emptyIcon {
   font-size: 48px;
   color: rgba(100, 116, 139, 0.25);
-  animation: pulse 3s ease-in-out infinite;
 }
 
 .emptyState p {
@@ -58,4 +57,14 @@
 @keyframes pulse {
   0%, 100% { opacity: 0.5; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Achicamos un poco el HUD de estadísticas en pantallas pequeñas */
+@media (max-width: 768px) {
+  .statsHud {
+    bottom: 12px;
+    right: 12px;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
 }

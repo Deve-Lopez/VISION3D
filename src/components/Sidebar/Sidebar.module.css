@@ -5,7 +5,6 @@
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -237,4 +236,38 @@
   font-size: 10px;
   color: var(--muted);
   line-height: 1.6;
+}
+
+
+/* 📱 Ajustes para móvil */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 40vh; /* Ocupa el 40% inferior de la pantalla */
+    border-right: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Ocultamos el logo en móvil para ganar espacio sagrado */
+  .logo {
+    display: none !important;
+  }
+
+  /* Hacemos que la zona de arrastre sea más bajita */
+  .dropZone {
+    min-height: 60px !important;
+    margin: 8px 12px !important;
+    padding: 10px !important;
+  }
+
+  /* Permitimos que las secciones de control se organicen mejor */
+  .controlsSection {
+    padding: 8px 12px !important;
+    overflow-y: auto;
+  }
+  
+  .envGrid {
+    gap: 4px !important;
+  }
 }

@@ -52,14 +52,19 @@ function Controls() {
   const controlsRef = useRef();
 
   useEffect(() => {
+    // 1. Detectamos primero si es un dispositivo táctil
     const isTouchDevice = window.matchMedia("(pointer:coarse)").matches;
+    
+    // 2. CREAMOS la instancia de los controles (IMPORTANTE: Esto debe ir antes)
     const controls = new TrackballControls(camera, gl.domElement);
-    controls.rotateSpeed = isTouchDevice ? 2.2 : 3.0;
-    controls.zoomSpeed = isTouchDevice ? 0.6 : 1.2;
-    controls.panSpeed = isTouchDevice ? 0.6 : 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = false;
+    
+    // 3. AHORA SÍ configuramos sus propiedades de forma segura
+    controls.rotateSpeed          = isTouchDevice ? 2.2 : 3.0;
+    controls.zoomSpeed            = isTouchDevice ? 0.6 : 1.2;
+    controls.panSpeed             = isTouchDevice ? 0.6 : 0.8;
+    controls.noZoom               = false;
+    controls.noPan                = false;
+    controls.staticMoving         = false;
     controls.dynamicDampingFactor = 0.2;
 
     const handleMouseUp = () => controls.handleMouseUp?.();
@@ -76,7 +81,6 @@ function Controls() {
 
   return null;
 }
-
 function WireframeUpdater({ showWireframe, modelGroupRef }) {
   useFrame(() => {
     // Si el modelo no se ha cargado todavía, salimos
