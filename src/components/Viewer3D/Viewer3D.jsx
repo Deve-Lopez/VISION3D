@@ -9,6 +9,8 @@ import * as THREE from "three";
 import ModelLoader from "../ModelLoader/ModelLoader";
 import Loader3D from "../Loader3D/Loader3D";
 import styles from "./Viewer3D.module.css";
+
+
 function CameraFitter({ modelUrl }) {
   const { camera, scene } = useThree();
   const fitted = useRef(null);
