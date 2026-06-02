@@ -1,4 +1,4 @@
-import Dashboard from "./components/Dashboard/Dashboard";
+import Dashboard from "./components/DashBoard/DashBoard";
 import "./index.css";
 
 export default function App() {
