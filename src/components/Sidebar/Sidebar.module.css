@@ -175,7 +175,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
-  text-transform: lowercase;
+  text-transform: capitalize;
 }
 
 .envBtn:hover {
@@ -237,6 +237,8 @@
   color: var(--muted);
   line-height: 1.6;
 }
+
+
 
 
 /* 📱 Ajustes para móvil */
