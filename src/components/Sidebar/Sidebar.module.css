@@ -1,3 +1,4 @@
+/* ── CONTENEDOR CONTROLLER PRINCIPAL (MODO ESCRITORIO) ── */
 .sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
@@ -9,6 +10,14 @@
   overflow-x: hidden;
 }
 
+/* Sub-contenedor secundario interno para blindar el scroll */
+.scrollContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* MARCA Y LOGOTIPO INTERNO */
 .logo {
   display: flex;
   align-items: center;
@@ -31,6 +40,7 @@
   color: var(--text);
 }
 
+/* RECUADRO DE CONTROL PARA SUBIR ARCHIVOS (DRAG & DROP) */
 .dropZone {
   margin: 10px 0 14px;
   border: 1.5px dashed var(--border);
@@ -78,6 +88,7 @@
   margin-top: 4px;
 }
 
+/* MENSAJES DE ALERTA DE ERROR DE EXTENSIÓN */
 .errorMsg {
   margin-bottom: 12px;
   font-size: 12px;
@@ -89,6 +100,7 @@
   line-height: 1.4;
 }
 
+/* COMPONENTES DE ENTORNO INTERNO Y SECCIONES */
 .controlsSection {
   padding: 14px 16px;
 }
@@ -116,6 +128,7 @@
   cursor: pointer;
 }
 
+/* INTERRUPTORES (SWITCHES) */
 .toggle {
   width: 36px;
   height: 20px;
@@ -148,6 +161,7 @@
   transform: translateX(16px);
 }
 
+/* ELEMENTO PALETA DE COLOR (INPUT COLOR) */
 .colorPick {
   width: 28px;
   height: 22px;
@@ -158,6 +172,7 @@
   padding: 1px;
 }
 
+/* REJILLA ESTÁNDAR PARA BOTONES PRESET (MODO ESCRITORIO) */
 .envGrid {
   display: flex;
   flex-wrap: wrap;
@@ -189,6 +204,13 @@
   color: var(--accent);
 }
 
+/* Inicialización vacía para la clase de iluminación en escritorio */
+.lightingGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* LISTA DE MODELOS EN LA NUBE */
 .cloudList {
   max-height: 130px;
   overflow-y: auto;
@@ -242,41 +264,56 @@
   display: block;
 }
 
-/* ── 📱 SECCIÓN RESPONSIVE CORREGIDA CON SCROLL VERTICAL TRADICIONAL ── */
+/* ── 📱 ESTILOS RESPONSIVE PARA DISPOSITIVOS MÓVILES (CON CARRUSEL LATERAL) ── */
 @media (max-width: 768px) {
   .sidebar {
+    /* Forzamos el anclaje físico fijo al fondo de la pantalla del móvil */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important; /* Mantiene la barra por encima del renderizador WebGL */
     width: 100% !important;
     min-width: 100% !important;
-    height: auto !important;             /* Quitamos el alto rígido */
-    max-height: 360px !important;        /* Ponemos un tope para proteger la vista 3D */
-    border-right: none;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;              /* El flujo vuelve a ir puramente hacia abajo */
-    overflow-y: auto !important;         /* ¡Activamos el scroll vertical nativo aquí! */
-    overflow-x: hidden !important;
-    padding: 12px 14px !important;
-    gap: 10px;
+    height: 42vh !important;  /* El panel ocupa rígidamente el 42% de la altura de la pantalla */
+    background: var(--surface) !important;
+    border-right: none !important;
+    border-top: 1px solid var(--border) !important;
+    display: block !important;
+    overflow: hidden !important; /* Congela el contenedor padre */
+    padding: 0 !important;
   }
 
-  /* Ocultamos elementos innecesarios */
+  /* Contenedor secundario que permite el flujo vertical general */
+  .scrollContainer {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important; /* Activa el desplazamiento hacia arriba/abajo en el menú */
+    overflow-x: hidden !important;
+    padding: 10px 14px 20px !important; /* Relleno inferior para un manejo cómodo en smartphones */
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    -webkit-overflow-scrolling: touch; /* Movimiento de scroll elástico y suave en iOS/Android */
+  }
+
+  /* Ocultamos elementos innecesarios en smartphones */
   .logo, .footer, .dropSub {
     display: none !important;
   }
 
   .controlsSection {
     width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
     padding: 0 !important;
     margin-top: 0 !important;
     flex: none !important;
   }
 
-  /* Dropzone compacta estilo barra */
+  /* Zona dropzone compactada estilo botón de barra */
   .dropZone {
     min-height: 38px !important;
-    margin: 4px 0 !important;
+    margin: 4px 0 6px !important;
     padding: 6px 12px !important;
     flex-direction: row !important;
     justify-content: center;
@@ -284,24 +321,24 @@
     border-radius: 6px;
   }
 
-  .dropIcon { font-size: 15px !important; }
+  .dropIcon { font-size: 14px !important; }
   .dropTitle { font-size: 11px !important; margin: 0; }
   .dropFile { margin-top: 0 !important; font-size: 11px; }
 
-  /* Lista cloud reducida */
+  /* Ajuste de dimensiones de la lista de archivos de la nube */
   .cloudList {
-    max-height: 70px !important;
+    max-height: 75px !important;
     padding: 4px !important;
     gap: 4px;
   }
-  .cloudItem { padding: 5px 8px !important; font-size: 11px !important; }
+  .cloudItem { padding: 6px 8px !important; font-size: 11px !important; }
 
-  /* Fila horizontal limpia para Rejilla, Malla y Color */
+  /* Interruptores distribuidos proporcionalmente en horizontal */
   .switchGroupMobile {
     display: flex !important;
     justify-content: space-between;
     width: 100%;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 2px;
   }
 
@@ -310,28 +347,49 @@
     width: auto !important;
     padding: 4px 0 !important;
     font-size: 11px !important;
-    gap: 5px;
+    gap: 4px;
   }
 
-  /* Las rejillas se rompen hacia abajo en 3 columnas perfectas */
+  /* El bloque de "Estilo de Escena" se queda ordenado en una cuadrícula fija de 3 columnas */
   .envGrid {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* 3 botones por fila */
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 5px !important;
     width: 100%;
   }
 
-  /* Los botones se ajustan al ancho de su columna y crecen hacia abajo */
-  .envBtn {
-    display: block !important;
-    width: 100% !important;
+  /* Los botones normales de la cuadrícula se expanden al 100% de su espacio */
+  .envGrid .envBtn {
+    display: block;
+    width: 100%;
     text-align: center;
-    padding: 6px 2px !important;
-    font-size: 10px !important;
+    padding: 7px 2px;
+    font-size: 10px;
+  }
+
+  /* ── 🌟 CONFIGURACIÓN INYECTADA DEL SCROLL HORIZONTAL (CARRUSEL) ── */
+  .lightingGrid {
+    display: flex !important;          /* Transmutamos de Grid a Flexbox de fila única */
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;      /* Impedimos por completo el salto de línea vertical */
+    overflow-x: auto !important;       /* Habilitamos explícitamente el desplazamiento lateral */
+    overflow-y: hidden !important;     /* Capamos desbordamientos verticales espurios */
+    gap: 6px !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
+    -webkit-overflow-scrolling: touch; /* Suavizado táctil para arrastre con el dedo */
+  }
+
+  /* Forzamos que los botones internos del carrusel mantengan un tamaño rígido e indeformable */
+  .lightingGrid .envBtn {
+    flex: 0 0 auto !important;         /* Evitamos que el motor flexbox los estruje */
+    width: auto !important;
+    min-width: 82px !important;        /* Margen de anchura seguro para contener las etiquetas de texto */
+    padding: 8px 10px !important;
   }
 
   .sectionLabel {
-    margin: 6px 0 4px !important;
+    margin: 4px 0 4px !important;
     font-size: 9px !important;
   }
 }

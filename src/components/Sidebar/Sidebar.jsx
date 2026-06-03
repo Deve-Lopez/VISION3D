@@ -26,7 +26,7 @@ export default function Sidebar({
   const [cloudModels, setCloudModels] = useState([]); // Estado para listar los modelos guardados en la nube
   const [loadingModels, setLoadingModels] = useState(false); // Estado de carga para la galería cloud
 
-  // Función manejadora para los presets de estilo global
+  // Función manejadora para los presets de estilo global (Rejilla, Malla y Color de fondo)
   function manejarCambioEstilo(estiloKey) {
     const config = SCENE_STYLES[estiloKey];
     if (!config) return;
@@ -49,7 +49,7 @@ export default function Sidebar({
     }
   }
 
-  // Hook de carga inicial
+  // Hook de carga inicial de la galería remota al montar el componente
   useEffect(() => {
     fetchCloudModels();
   }, []);
@@ -59,13 +59,16 @@ export default function Sidebar({
     if (!file) return;
     const ext = file.name.split(".").pop().toLowerCase();
     
+    // Validamos que el archivo tenga una extensión 3D permitida
     if (!VALID_EXT.includes(ext)) {
       setError("Solo se admiten .glb, .gltf, .stl y .obj");
       return;
     }
 
+    // Liberamos la memoria del objeto Blob anterior si existía para optimizar rendimiento
     if (prevBlob.current) URL.revokeObjectURL(prevBlob.current);
     
+    // Creamos una URL temporal local para renderizar el objeto 3D inmediatamente
     const localUrl = URL.createObjectURL(file);
     prevBlob.current = localUrl; 
 
@@ -74,6 +77,7 @@ export default function Sidebar({
     setModelExt(ext);
     setFileName(file.name);
 
+    // Flujo de subida en segundo plano a la nube
     if (uploading) return; 
     setUploading(true);
     try {
@@ -82,7 +86,7 @@ export default function Sidebar({
       if (local) {
         console.info("Modelo cargado localmente (+50MB, no guardado en la nube)");
       } else {
-        fetchCloudModels(); 
+        fetchCloudModels(); // Refrescamos la lista para mostrar el nuevo archivo
       }
     } catch (e) {
       console.error("Error en backup silencioso:", e.message);
@@ -91,11 +95,13 @@ export default function Sidebar({
     }
   }
 
+  // Captura el archivo soltado en la zona Drag and Drop
   function onDrop(e) {
     e.preventDefault();
     handleFile(e.dataTransfer.files[0]); 
   }
 
+  // Selecciona un modelo guardado en la base de datos cloud
   function handleSelectCloudModel(model) {
     setError(null);
     setBlobUrl(model.url); 
@@ -111,100 +117,105 @@ export default function Sidebar({
         <span className={styles.logoText}>VISION3D</span>
       </div>
 
-      {/* BLOQUE DE ARCHIVOS Y GALERÍA CLOUD */}
-      <div className={styles.controlsSection}>
-        <p className={styles.sectionLabel}>Carga de Modelos</p>
-        <div className={styles.dropZone} onDrop={onDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current.click()}>
-          <input ref={inputRef} type="file" accept=".glb,.gltf,.stl,.obj" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
-          <div className={styles.dropIcon}>⬆</div>
-          <p className={styles.dropTitle}>Subir archivo 3D</p>
-          <p className={styles.dropSub}>.glb · .gltf · .stl · .obj</p>
-          {fileName && <p className={styles.dropFile}>✓ {fileName}</p>}
+      {/* CONTENEDOR DE SEGURIDAD INTERNO: Administra el scroll general del panel */}
+      <div className={styles.scrollContainer}>
+        
+        {/* BLOQUE DE ARCHIVOS Y GALERÍA CLOUD */}
+        <div className={styles.controlsSection}>
+          <p className={styles.sectionLabel}>Carga de Modelos</p>
+          <div className={styles.dropZone} onDrop={onDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current.click()}>
+            <input ref={inputRef} type="file" accept=".glb,.gltf,.stl,.obj" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
+            <div className={styles.dropIcon}>⬆</div>
+            <p className={styles.dropTitle}>Subir archivo 3D</p>
+            <p className={styles.dropSub}>.glb · .gltf · .stl · .obj</p>
+            {fileName && <p className={styles.dropFile}>✓ {fileName}</p>}
+          </div>
+
+          {error && <p className={styles.errorMsg}>{error}</p>}
+
+          <p className={styles.sectionLabel}>Modelos en la nube</p>
+          {loadingModels ? (
+            <p className={styles.dropSub}>Conectando con la nube...</p>
+          ) : cloudModels.length === 0 ? (
+            <p className={styles.dropSub}>No hay modelos guardados.</p>
+          ) : (
+            <div className={styles.cloudList}>
+              {cloudModels.map((model) => (
+                <button
+                  key={model.id}
+                  onClick={() => handleSelectCloudModel(model)}
+                  className={`${styles.cloudItem} ${fileName === model.name ? styles.active : ""}`}
+                >
+                  📦 {model.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {error && <p className={styles.errorMsg}>{error}</p>}
+        {/* BLOQUE DE PARÁMETROS DE RENDER, ESCENAS E ILUMINACIÓN */}
+        <div className={styles.controlsSection}>
+          <p className={styles.sectionLabel}>Configuración Escena</p>
 
-        <p className={styles.sectionLabel}>Modelos en la nube</p>
-        {loadingModels ? (
-          <p className={styles.dropSub}>Conectando con la nube...</p>
-        ) : cloudModels.length === 0 ? (
-          <p className={styles.dropSub}>No hay modelos guardados.</p>
-        ) : (
-          <div className={styles.cloudList}>
-            {cloudModels.map((model) => (
-              <button
-                key={model.id}
-                onClick={() => handleSelectCloudModel(model)}
-                className={`${styles.cloudItem} ${fileName === model.name ? styles.active : ""}`}
-              >
-                📦 {model.name}
+          {/* Contenedor en línea para los interruptores en móvil */}
+          <div className={styles.switchGroupMobile}>
+            {/* Control Rejilla */}
+            <label className={styles.controlRow}>
+              <span>Rejilla</span>
+              <button className={`${styles.toggle} ${showGrid ? styles.on : ""}`} onClick={() => setShowGrid(v => !v)}>
+                <span className={styles.toggleKnob} />
+              </button>
+            </label>
+
+            {/* Control Malla */}
+            <label className={styles.controlRow}>
+              <span>Malla</span>
+              <button className={`${styles.toggle} ${showWireframe ? styles.on : ""}`} onClick={() => setShowWireframe(v => !v)}>
+                <span className={styles.toggleKnob} />
+              </button>
+            </label>
+
+            {/* Selector de color de fondo */}
+            <label className={styles.controlRow}>
+              <span>Color</span>
+              <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className={styles.colorPick} />
+            </label>
+          </div>
+
+          {/* Botones Estilo de Escena (Se quedan fijos en cuadrícula de 3 columnas) */}
+          <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Estilo de Escena</p>
+          <div className={styles.envGrid}>
+            <button 
+              className={`${styles.envBtn} ${bgColor === "#1e1e24" && showGrid && !showWireframe ? styles.active : ""}`} 
+              onClick={() => manejarCambioEstilo("estudio")}
+            >
+              Estudio
+            </button>
+            <button 
+              className={`${styles.envBtn} ${bgColor === "#f1f5f9" && showGrid && showWireframe ? styles.active : ""}`} 
+              onClick={() => manejarCambioEstilo("laboratorio")}
+            >
+              Laboratorio
+            </button>
+            <button 
+              className={`${styles.envBtn} ${bgColor === "#0f172a" && !showGrid && !showWireframe ? styles.active : ""}`} 
+              onClick={() => manejarCambioEstilo("minimal")}
+            >
+              Minimal
+            </button>
+          </div>
+
+          {/* Selector de iluminación: se añade la clase de control horizontal 'lightingGrid' */}
+          <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Iluminación del modelo</p>
+          <div className={`${styles.envGrid} ${styles.lightingGrid}`}>
+            {ENV_PRESETS.map((p) => (
+              <button key={p} className={`${styles.envBtn} ${envPreset === p ? styles.active : ""}`} onClick={() => setEnvPreset(p)}>
+                {p}
               </button>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* BLOQUE DE PARÁMETROS DE RENDER, ESCENAS E ILUMINACIÓN */}
-      <div className={styles.controlsSection}>
-        <p className={styles.sectionLabel}>Configuración Escena</p>
-
-        {/* Contenedor inline para envolver los interruptores en móvil */}
-        <div className={styles.switchGroupMobile}>
-          {/* Interruptor Cuadrícula */}
-          <label className={styles.controlRow}>
-            <span>Rejilla</span>
-            <button className={`${styles.toggle} ${showGrid ? styles.on : ""}`} onClick={() => setShowGrid(v => !v)}>
-              <span className={styles.toggleKnob} />
-            </button>
-          </label>
-
-          {/* Interruptor Malla */}
-          <label className={styles.controlRow}>
-            <span>Malla</span>
-            <button className={`${styles.toggle} ${showWireframe ? styles.on : ""}`} onClick={() => setShowWireframe(v => !v)}>
-              <span className={styles.toggleKnob} />
-            </button>
-          </label>
-
-          {/* Selector de color */}
-          <label className={styles.controlRow}>
-            <span>Color</span>
-            <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className={styles.colorPick} />
-          </label>
         </div>
 
-        {/* Botones Estilo de Escena */}
-        <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Estilo de Escena</p>
-        <div className={styles.envGrid}>
-          <button 
-            className={`${styles.envBtn} ${bgColor === "#1e1e24" && showGrid && !showWireframe ? styles.active : ""}`} 
-            onClick={() => manejarCambioEstilo("estudio")}
-          >
-            Estudio
-          </button>
-          <button 
-            className={`${styles.envBtn} ${bgColor === "#f1f5f9" && showGrid && showWireframe ? styles.active : ""}`} 
-            onClick={() => manejarCambioEstilo("laboratorio")}
-          >
-            Laboratorio
-          </button>
-          <button 
-            className={`${styles.envBtn} ${bgColor === "#0f172a" && !showGrid && !showWireframe ? styles.active : ""}`} 
-            onClick={() => manejarCambioEstilo("minimal")}
-          >
-            Minimal
-          </button>
-        </div>
-
-        {/* Selector de iluminación física del objeto */}
-        <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Iluminación del modelo</p>
-        <div className={styles.envGrid}>
-          {ENV_PRESETS.map((p) => (
-            <button key={p} className={`${styles.envBtn} ${envPreset === p ? styles.active : ""}`} onClick={() => setEnvPreset(p)}>
-              {p}
-            </button>
-          ))}
-        </div>
       </div>
       
       {/* FOOTER: Se oculta automáticamente en móvil */}
