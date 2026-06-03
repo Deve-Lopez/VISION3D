@@ -241,35 +241,103 @@
 
 
 
-/* 📱 Ajustes para móvil */
+/* ── 📱 SECCIÓN RESPONSIVE PARA MÓVILES CORREGIDA (MÁXIMA OPTIMIZACIÓN) ── */
 @media (max-width: 768px) {
   .sidebar {
     width: 100% !important;
     min-width: 100% !important;
-    height: 40vh; /* Ocupa el 40% inferior de la pantalla */
+    height: 320px !important; /* Mantenemos un tamaño bajo para el canvas */
     border-right: none;
     border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column; /* Volvemos a vertical, pero todo minificado */
+    overflow-y: auto; /* Scroll vertical fluido si llega a faltar espacio */
+    overflow-x: hidden;
+    padding: 8px 12px !important;
+    gap: 10px;
   }
 
-  /* Ocultamos el logo en móvil para ganar espacio sagrado */
-  .logo {
+  /* Ocultamos elementos innecesarios */
+  .logo, .footer, .dropSub {
     display: none !important;
   }
 
-  /* Hacemos que la zona de arrastre sea más bajita */
-  .dropZone {
-    min-height: 60px !important;
-    margin: 8px 12px !important;
-    padding: 10px !important;
+  /* Las secciones ya no son tarjetas rígidas, ocupan el ancho completo */
+  .controlsSection {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border-right: none !important;
+    margin-top: 0 !important;
+    flex: none !important;
   }
 
-  /* Permitimos que las secciones de control se organicen mejor */
-  .controlsSection {
-    padding: 8px 12px !important;
-    overflow-y: auto;
+  /* Reducción extrema del DropZone: ahora es una barra compacta de una línea */
+  .dropZone {
+    min-height: 40px !important;
+    margin: 4px 0 !important;
+    padding: 6px 12px !important;
+    flex-direction: row !important; /* Icono y texto alineados horizontalmente */
+    justify-content: center;
+    gap: 8px;
+    border-radius: 6px;
   }
-  
+
+  .dropIcon {
+    font-size: 16px !important;
+  }
+
+  .dropTitle {
+    font-size: 12px !important;
+    margin: 0;
+  }
+
+  .dropFile {
+    margin-top: 0 !important;
+    font-size: 11px;
+  }
+
+  /* Lista de la nube más compacta para que no desplace lo de abajo */
+  .cloudList {
+    max-height: 80px !important;
+    padding: 4px !important;
+    gap: 4px;
+  }
+
+  .cloudItem {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* Flexbox para los interruptores: ahora los ponemos en una sola línea horizontal */
+  .controlRow {
+    display: inline-flex !important;
+    width: auto !important;
+    margin-right: 14px;
+    padding: 4px 0 !important;
+    font-size: 12px !important;
+    gap: 6px;
+  }
+
+  /* Las cuadrículas de botones ahora aprovechan todo el ancho de la pantalla */
   .envGrid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* 4 botones por fila en móvil */
     gap: 4px !important;
+    width: 100%;
+  }
+
+  /* Ajuste de los botones para que quepan en la cuadrícula */
+  .envBtn {
+    width: 100% !important;
+    text-align: center;
+    padding: 6px 2px !important; /* Relleno mínimo para que no rompa el texto */
+    font-size: 9px !important; /* Letra ligeramente más pequeña para evitar cortes */
+  }
+
+  .sectionLabel {
+    margin: 8px 0 4px !important;
+    font-size: 9px !important;
   }
 }
