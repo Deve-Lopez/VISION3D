@@ -173,7 +173,7 @@ export default function Sidebar({
           </label>
         </div>
 
-        {/* Botones Estilo de Escena con detección de estado .active inteligente */}
+        {/* Botones Estilo de Escena */}
         <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Estilo de Escena</p>
         <div className={styles.envGrid}>
           <button 
