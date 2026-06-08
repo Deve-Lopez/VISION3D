@@ -1,4 +1,3 @@
-// components/Scene.jsx
 import { Suspense, useRef, memo } from "react";
 import { Grid, Environment } from "@react-three/drei";
 import ModelLoader from "../../ModelLoader/ModelLoader";
@@ -6,8 +5,8 @@ import Loader3D from "../../Loader3D/Loader3D";
 import { LOCAL_ENV_FILES } from "../constants";
 
 // Subcomponentes modulares
-import {RotationUpdater} from "./RotationUpdater";
-import {WireframeUpdater} from "./WireframeUpdater";
+import { RotationUpdater } from "./RotationUpdater";
+import { WireframeUpdater } from "./WireframeUpdater";
 import CameraFitter from "./CameraFitter";
 import Controls from "./Controls";
 
@@ -53,8 +52,9 @@ export const Scene = memo(function Scene({
         </Suspense>
       </group>
 
-      <RotationUpdater autoRotate={autoRotate} modelGroupRef={modelGroupRef} />
-      <WireframeUpdater showWireframe={showWireframe} modelGroupRef={modelGroupRef} />
+      {/* Corrección de mapeo de propiedades (modelRef) */}
+      <RotationUpdater autoRotate={autoRotate} modelRef={modelGroupRef} />
+      <WireframeUpdater showWireframe={showWireframe} modelRef={modelGroupRef} />
       <CameraFitter modelUrl={modelUrl} />
       <Controls />
     </>

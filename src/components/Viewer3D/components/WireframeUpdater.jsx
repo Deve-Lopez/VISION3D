@@ -5,7 +5,9 @@ export function WireframeUpdater({ modelRef, showWireframe }) {
   const wireframeGroupRef = useRef(new THREE.Group());
 
   useEffect(() => {
-    if (!modelRef.current) return;
+    // 💡 PROTECCIÓN CRÍTICA: Si modelRef no existe o modelRef.current aún es null,
+    // salimos pacíficamente sin romper la aplicación con un error fatal.
+    if (!modelRef || !modelRef.current) return;
 
     const model = modelRef.current;
     const wireframeGroup = wireframeGroupRef.current;
@@ -23,23 +25,19 @@ export function WireframeUpdater({ modelRef, showWireframe }) {
       return;
     }
 
-    // 2. Si se activa, construimos una malla de bordes optimizada (EdgesGeometry)
-    // Evitamos duplicar si ya existe
+    // 2. Si se activa, construimos una malla de bordes optimizada
     if (wireframeGroup.children.length === 0) {
       model.traverse((child) => {
         if (child.isMesh && child.geometry) {
-          // EdgesGeometry solo calcula las líneas de los contornos reales,
-          // ignorando diagonales invisibles. ¡Reduce los vectores un 70%!
-          const edgesGeo = new THREE.EdgesGeometry(child.geometry, 24); // 24 grados de umbral
+          const edgesGeo = new THREE.EdgesGeometry(child.geometry, 24);
           
           const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x6ee7b7, // Tu color accent habitual
-            linewidth: 1,    // Grosor mínimo nativo
+            color: 0x6ee7b7,
+            linewidth: 1,
           });
 
           const lineSegments = new THREE.LineSegments(edgesGeo, lineMaterial);
           
-          // Copiamos escala y posición exacta del sub-mesh
           lineSegments.position.copy(child.position);
           lineSegments.rotation.copy(child.rotation);
           lineSegments.scale.copy(child.scale);
@@ -53,13 +51,12 @@ export function WireframeUpdater({ modelRef, showWireframe }) {
     model.add(wireframeGroup);
 
     return () => {
-      // Limpieza al desmontar
       while (wireframeGroup.children.length > 0) {
         const child = wireframeGroup.children.pop();
         if (child.geometry) child.geometry.dispose();
         if (child.material) child.material.dispose();
       }
-      model.remove(wireframeGroup);
+      if (model && wireframeGroup) model.remove(wireframeGroup);
     };
   }, [showWireframe, modelRef]);
 
