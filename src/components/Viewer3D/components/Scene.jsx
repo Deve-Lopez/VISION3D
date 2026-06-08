@@ -6,8 +6,8 @@ import Loader3D from "../../Loader3D/Loader3D";
 import { LOCAL_ENV_FILES } from "../constants";
 
 // Subcomponentes modulares
-import RotationUpdater from "./RotationUpdater";
-import WireframeUpdater from "./WireframeUpdater";
+import {RotationUpdater} from "./RotationUpdater";
+import {WireframeUpdater} from "./WireframeUpdater";
 import CameraFitter from "./CameraFitter";
 import Controls from "./Controls";
 
