@@ -11,7 +11,7 @@ import CameraFitter from "./CameraFitter";
 import Controls from "./Controls";
 
 export const Scene = memo(function Scene({ 
-  modelUrl, modelExt, showGrid, envPreset, onStats, showWireframe, autoRotate 
+  modelUrl, modelExt, showGrid, envPreset, onStats, showWireframe, autoRotate, bgColor 
 }) {
   const modelGroupRef = useRef();
   const envFile = LOCAL_ENV_FILES[envPreset] || LOCAL_ENV_FILES.sunset;
@@ -52,9 +52,12 @@ export const Scene = memo(function Scene({
         </Suspense>
       </group>
 
-      {/* Corrección de mapeo de propiedades (modelRef) */}
+      {/* Updaters de comportamiento */}
       <RotationUpdater autoRotate={autoRotate} modelRef={modelGroupRef} />
+      
+      {/* Malla limpia e independiente del color de fondo */}
       <WireframeUpdater showWireframe={showWireframe} modelRef={modelGroupRef} />
+      
       <CameraFitter modelUrl={modelUrl} />
       <Controls />
     </>

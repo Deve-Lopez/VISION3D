@@ -1,64 +1,77 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
+/**
+ * Componente optimizado para aplicar una malla transparente
+ * tipo "Rayos X" en color gris oscuro técnico e independiente.
+ */
 export function WireframeUpdater({ modelRef, showWireframe }) {
-  const wireframeGroupRef = useRef(new THREE.Group());
+  // Guardamos un historial de los materiales originales para restaurarlos al apagar la malla
+  const originalMaterialsRef = useRef(new Map());
 
   useEffect(() => {
-    // 💡 PROTECCIÓN CRÍTICA: Si modelRef no existe o modelRef.current aún es null,
-    // salimos pacíficamente sin romper la aplicación con un error fatal.
+    // Protección anti-cuelgues si el modelo aún no se ha cargado
     if (!modelRef || !modelRef.current) return;
 
     const model = modelRef.current;
-    const wireframeGroup = wireframeGroupRef.current;
+    const materialsMap = originalMaterialsRef.current;
 
-    // 1. Si se desactiva el wireframe, limpiamos los restos y salimos
+    // 1. Si desactivas el interruptor "Malla", restauramos los materiales originales
     if (!showWireframe) {
-      while (wireframeGroup.children.length > 0) {
-        const child = wireframeGroup.children.pop();
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) child.material.dispose();
-      }
-      if (wireframeGroup.parent) {
-        model.remove(wireframeGroup);
+      if (materialsMap.size > 0) {
+        model.traverse((child) => {
+          if (child.isMesh && materialsMap.has(child.uuid)) {
+            const originalMat = materialsMap.get(child.uuid);
+            
+            if (Array.isArray(originalMat)) {
+              child.material = originalMat;
+            } else {
+              child.material.dispose(); // Liberamos el material wireframe
+              child.material = originalMat; // Reasignamos el original limpio
+            }
+          }
+        });
+        materialsMap.clear();
       }
       return;
     }
 
-    // 2. Si se activa, construimos una malla de bordes optimizada
-    if (wireframeGroup.children.length === 0) {
+    // 2. Aplicamos la malla transparente en gris oscuro
+    if (materialsMap.size === 0) {
       model.traverse((child) => {
         if (child.isMesh && child.geometry) {
-          const edgesGeo = new THREE.EdgesGeometry(child.geometry, 24);
-          
-          const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x6ee7b7,
-            linewidth: 1,
+          // Respaldamos el material original
+          materialsMap.set(child.uuid, child.material);
+
+          // Creamos el material transparente con estética industrial/técnica gris
+          child.material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color("#475569"), // 👈 GRIS OSCURO FIJO (Independiente del fondo)
+            wireframe: true,
+            transparent: true,
+            opacity: 0.18,           // Opacidad equilibrada para que sea visible y transparente
+            depthTest: true,
+            side: THREE.DoubleSide,  // Muestra las líneas internas y externas
           });
-
-          const lineSegments = new THREE.LineSegments(edgesGeo, lineMaterial);
-          
-          lineSegments.position.copy(child.position);
-          lineSegments.rotation.copy(child.rotation);
-          lineSegments.scale.copy(child.scale);
-
-          wireframeGroup.add(lineSegments);
         }
       });
     }
 
-    // 3. Añadimos el grupo de líneas optimizadas al modelo principal
-    model.add(wireframeGroup);
-
+    // 3. Limpieza de seguridad al desmontar el componente (Ctrl+S, cambios de ruta, etc.)
     return () => {
-      while (wireframeGroup.children.length > 0) {
-        const child = wireframeGroup.children.pop();
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) child.material.dispose();
+      if (model && materialsMap.size > 0) {
+        model.traverse((child) => {
+          if (child.isMesh && materialsMap.has(child.uuid)) {
+            const originalMat = materialsMap.get(child.uuid);
+            if (!Array.isArray(originalMat)) {
+              if (child.material) child.material.dispose();
+            }
+            child.material = originalMat;
+          }
+        });
+        materialsMap.clear();
       }
-      if (model && wireframeGroup) model.remove(wireframeGroup);
     };
-  }, [showWireframe, modelRef]);
+  }, [showWireframe, modelRef]); // Ya no depende de colores externos, evitando parpadeos
 
   return null;
 }
