@@ -20,21 +20,22 @@ export default function Sidebar({
   fileName, error, setError, setBlobUrl, setModelExt, setFileName, prevBlob,
   showGrid, setShowGrid, showWireframe, setShowWireframe,
   bgColor, setBgColor, envPreset, setEnvPreset,
-  uploading, setUploading, setShareUrl
+  uploading, setUploading, setShareUrl, 
+  sceneStyle, setSceneStyle // Recibidos correctamente desde el Dashboard
 }) {
   const inputRef = useRef(); // Referencia para controlar el input <type="file"> oculto
   const [cloudModels, setCloudModels] = useState([]); // Estado para listar los modelos guardados en la nube
   const [loadingModels, setLoadingModels] = useState(false); // Estado de carga para la galería cloud
 
-  // Función manejadora para los presets de estilo global (Rejilla, Malla y Color de fondo)
-  function manejarCambioEstilo(estiloKey) {
-    const config = SCENE_STYLES[estiloKey];
-    if (!config) return;
+  // ── EL EFECTO QUE SINCRONIZA EL ESTADO (Igual que hace Three con envPreset) ──
+  useEffect(() => {
+    const config = SCENE_STYLES[sceneStyle];
+    if (!config) return; // Si es "custom", no sobrescribimos los cambios manuales del usuario
 
     setBgColor(config.bgColor);
     setShowGrid(config.showGrid);
     setShowWireframe(config.showWireframe);
-  }
+  }, [sceneStyle, setBgColor, setShowGrid, setShowWireframe]);
 
   // Función asíncrona para traer los modelos existentes en el servidor
   async function fetchCloudModels() {
@@ -59,16 +60,13 @@ export default function Sidebar({
     if (!file) return;
     const ext = file.name.split(".").pop().toLowerCase();
     
-    // Validamos que el archivo tenga una extensión 3D permitida
     if (!VALID_EXT.includes(ext)) {
       setError("Solo se admiten .glb, .gltf, .stl y .obj");
       return;
     }
 
-    // Liberamos la memoria del objeto Blob anterior si existía para optimizar rendimiento
     if (prevBlob.current) URL.revokeObjectURL(prevBlob.current);
     
-    // Creamos una URL temporal local para renderizar el objeto 3D inmediatamente
     const localUrl = URL.createObjectURL(file);
     prevBlob.current = localUrl; 
 
@@ -77,7 +75,6 @@ export default function Sidebar({
     setModelExt(ext);
     setFileName(file.name);
 
-    // Flujo de subida en segundo plano a la nube
     if (uploading) return; 
     setUploading(true);
     try {
@@ -86,7 +83,7 @@ export default function Sidebar({
       if (local) {
         console.info("Modelo cargado localmente (+50MB, no guardado en la nube)");
       } else {
-        fetchCloudModels(); // Refrescamos la lista para mostrar el nuevo archivo
+        fetchCloudModels(); 
       }
     } catch (e) {
       console.error("Error en backup silencioso:", e.message);
@@ -95,13 +92,11 @@ export default function Sidebar({
     }
   }
 
-  // Captura el archivo soltado en la zona Drag and Drop
   function onDrop(e) {
     e.preventDefault();
     handleFile(e.dataTransfer.files[0]); 
   }
 
-  // Selecciona un modelo guardado en la base de datos cloud
   function handleSelectCloudModel(model) {
     setError(null);
     setBlobUrl(model.url); 
@@ -111,13 +106,13 @@ export default function Sidebar({
 
   return (
     <aside className={styles.sidebar}>
-      {/* SECCIÓN LOGO: Se oculta automáticamente en móvil */}
+      {/* SECCIÓN LOGO */}
       <div className={styles.logo}>
         <span className={styles.logoIcon}>◈</span>
         <span className={styles.logoText}>VISION3D</span>
       </div>
 
-      {/* CONTENEDOR DE SEGURIDAD INTERNO: Administra el scroll general del panel */}
+      {/* CONTENEDOR DE SEGURIDAD INTERNO */}
       <div className={styles.scrollContainer}>
         
         {/* BLOQUE DE ARCHIVOS Y GALERÍA CLOUD */}
@@ -157,9 +152,7 @@ export default function Sidebar({
         <div className={styles.controlsSection}>
           <p className={styles.sectionLabel}>Configuración Escena</p>
 
-          {/* Contenedor en línea para los interruptores en móvil */}
           <div className={styles.switchGroupMobile}>
-            {/* Control Rejilla */}
             <label className={styles.controlRow}>
               <span>Rejilla</span>
               <button className={`${styles.toggle} ${showGrid ? styles.on : ""}`} onClick={() => setShowGrid(v => !v)}>
@@ -167,7 +160,6 @@ export default function Sidebar({
               </button>
             </label>
 
-            {/* Control Malla */}
             <label className={styles.controlRow}>
               <span>Malla</span>
               <button className={`${styles.toggle} ${showWireframe ? styles.on : ""}`} onClick={() => setShowWireframe(v => !v)}>
@@ -175,37 +167,36 @@ export default function Sidebar({
               </button>
             </label>
 
-            {/* Selector de color de fondo */}
             <label className={styles.controlRow}>
               <span>Color</span>
               <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className={styles.colorPick} />
             </label>
           </div>
 
-          {/* Botones Estilo de Escena (Se quedan fijos en cuadrícula de 3 columnas) */}
+          {/* Botones Estilo de Escena simplificados (Iguales a los ENV_PRESETS) */}
           <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Estilo de Escena</p>
           <div className={styles.envGrid}>
             <button 
-              className={`${styles.envBtn} ${bgColor === "#1e1e24" && showGrid && !showWireframe ? styles.active : ""}`} 
-              onClick={() => manejarCambioEstilo("estudio")}
+              className={`${styles.envBtn} ${sceneStyle === "estudio" ? styles.active : ""}`} 
+              onClick={() => setSceneStyle("estudio")}
             >
               Estudio
             </button>
             <button 
-              className={`${styles.envBtn} ${bgColor === "#f1f5f9" && showGrid && showWireframe ? styles.active : ""}`} 
-              onClick={() => manejarCambioEstilo("laboratorio")}
+              className={`${styles.envBtn} ${sceneStyle === "laboratorio" ? styles.active : ""}`} 
+              onClick={() => setSceneStyle("laboratorio")}
             >
               Laboratorio
             </button>
             <button 
-              className={`${styles.envBtn} ${bgColor === "#0f172a" && !showGrid && !showWireframe ? styles.active : ""}`} 
-              onClick={() => manejarCambioEstilo("minimal")}
+              className={`${styles.envBtn} ${sceneStyle === "minimal" ? styles.active : ""}`} 
+              onClick={() => setSceneStyle("minimal")}
             >
               Minimal
             </button>
           </div>
 
-          {/* Selector de iluminación: se añade la clase de control horizontal 'lightingGrid' */}
+          {/* Selector de iluminación */}
           <p className={`${styles.sectionLabel} ${styles.mtMd}`}>Iluminación del modelo</p>
           <div className={`${styles.envGrid} ${styles.lightingGrid}`}>
             {ENV_PRESETS.map((p) => (
@@ -218,7 +209,6 @@ export default function Sidebar({
 
       </div>
       
-      {/* FOOTER: Se oculta automáticamente en móvil */}
       <div className={styles.footer}>
         <p>Clic · Rotar libre · Scroll zoom · Clic derecho · Pan</p>
       </div>

@@ -62,9 +62,19 @@
 /* Achicamos un poco el HUD de estadísticas en pantallas pequeñas */
 @media (max-width: 768px) {
   .statsHud {
-    bottom: 12px;
+    /* Desactivamos la posición inferior para que no quede detrás del menú */
+    bottom: auto; 
+    
+    /* Lo movemos a la parte superior derecha */
+    top: 12px;    
     right: 12px;
-    padding: 4px 8px;
+    
+    /* Mantenemos tus optimizaciones de tamaño */
+    padding: 6px 10px;
     font-size: 10px;
+    line-height: 1.6;
+    
+    /* Un extra: subimos ligeramente la opacidad del fondo por si el modelo es claro arriba */
+    background: rgba(15, 23, 42, 0.9); 
   }
 }

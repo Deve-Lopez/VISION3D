@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [showWireframe, setShowWireframe] = useState(false);
   const [bgColor, setBgColor] = useState("#0b1120");
   const [envPreset, setEnvPreset] = useState("sunset");
+  const [sceneStyle, setSceneStyle] = useState("estudio");
 
   // ── ESTADOS DE SUBIDA (SUPABASE) ──
   const [uploading, setUploading] = useState(false);
@@ -37,6 +38,8 @@ export default function Dashboard() {
         setShowWireframe={setShowWireframe}
         bgColor={bgColor}
         setBgColor={setBgColor}
+        sceneStyle={sceneStyle}
+        setSceneStyle={setSceneStyle}
         envPreset={envPreset}
         setEnvPreset={setEnvPreset}
         uploading={uploading}
