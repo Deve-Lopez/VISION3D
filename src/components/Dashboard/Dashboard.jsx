@@ -18,6 +18,8 @@ export default function Dashboard() {
   const [envPreset, setEnvPreset] = useState("sunset");
   const [sceneStyle, setSceneStyle] = useState("estudio");
 
+  // ── ESTADO PAR ALA AUTO-ROTACIÓN ──
+  const [autoRotate, setAutoRotate] = useState(false);
   // ── ESTADOS DE SUBIDA (SUPABASE) ──
   const [uploading, setUploading] = useState(false);
   const [shareUrl, setShareUrl] = useState(null);
@@ -45,6 +47,8 @@ export default function Dashboard() {
         uploading={uploading}
         setUploading={setUploading}
         setShareUrl={setShareUrl}
+        autoRotate={autoRotate}
+        setAutoRotate={setAutoRotate}
       />
       
       <Viewer3D
@@ -54,6 +58,7 @@ export default function Dashboard() {
         showWireframe={showWireframe}
         envPreset={envPreset}
         bgColor={bgColor}
+        autoRotate={autoRotate}
       />
     </div>
   );
