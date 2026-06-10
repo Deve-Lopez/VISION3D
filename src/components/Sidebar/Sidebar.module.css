@@ -212,7 +212,7 @@
 
 /* LISTA DE MODELOS EN LA NUBE */
 .cloudList {
-  max-height: 130px;
+  max-height: 200px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -262,6 +262,37 @@
 
 .switchGroupMobile {
   display: block;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface2);
+  outline: none;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
 }
 
 /* ── 📱 ESTILOS RESPONSIVE PARA DISPOSITIVOS MÓVILES (CON CARRUSEL LATERAL) ── */
@@ -392,4 +423,8 @@
     margin: 4px 0 4px !important;
     font-size: 9px !important;
   }
+
+  .slider {
+  width: 60px !important;
+}
 }

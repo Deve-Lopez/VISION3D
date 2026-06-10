@@ -4,14 +4,12 @@ import ModelLoader from "../../ModelLoader/ModelLoader";
 import Loader3D from "../../Loader3D/Loader3D";
 import { LOCAL_ENV_FILES } from "../constants";
 
-// Subcomponentes modulares
 import { RotationUpdater } from "./RotationUpdater";
-import { WireframeUpdater } from "./WireframeUpdater";
 import CameraFitter from "./CameraFitter";
 import Controls from "./Controls";
 
 export const Scene = memo(function Scene({ 
-  modelUrl, modelExt, showGrid, envPreset, onStats, showWireframe, autoRotate, bgColor 
+  modelUrl, modelExt, showGrid, envPreset, onStats, showWireframe, autoRotate, bgColor, explodeStrength
 }) {
   const modelGroupRef = useRef();
   const envFile = LOCAL_ENV_FILES[envPreset] || LOCAL_ENV_FILES.sunset;
@@ -47,17 +45,13 @@ export const Scene = memo(function Scene({
               ext={modelExt}
               onStats={onStats}
               showWireframe={showWireframe}
+              explodeStrength={explodeStrength}
             />
           )}
         </Suspense>
       </group>
 
-      {/* Updaters de comportamiento */}
       <RotationUpdater autoRotate={autoRotate} modelRef={modelGroupRef} />
-      
-      {/* Malla limpia e independiente del color de fondo */}
-      <WireframeUpdater showWireframe={showWireframe} modelRef={modelGroupRef} />
-      
       <CameraFitter modelUrl={modelUrl} />
       <Controls />
     </>

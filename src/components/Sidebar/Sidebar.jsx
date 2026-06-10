@@ -15,7 +15,7 @@ export default function Sidebar({
   showGrid, setShowGrid, showWireframe, setShowWireframe,
   bgColor, setBgColor, envPreset, setEnvPreset,
   uploading, setUploading, setShareUrl,
-  sceneStyle, setSceneStyle, autoRotate, setAutoRotate
+  sceneStyle, setSceneStyle, autoRotate, setAutoRotate, explodeStrength, setExplodeStrength
 }) {
   const [cloudModels, setCloudModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
@@ -82,8 +82,8 @@ export default function Sidebar({
             showWireframe={showWireframe} setShowWireframe={setShowWireframe}
             autoRotate={autoRotate} setAutoRotate={setAutoRotate}
             bgColor={bgColor} setBgColor={setBgColor}
-          />
-          <SceneStyleSelector
+            explodeStrength={explodeStrength} setExplodeStrength={setExplodeStrength}
+          />          <SceneStyleSelector
             sceneStyle={sceneStyle} setSceneStyle={setSceneStyle}
             envPreset={envPreset} setEnvPreset={setEnvPreset}
           />

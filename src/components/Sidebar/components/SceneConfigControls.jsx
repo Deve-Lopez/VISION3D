@@ -1,6 +1,12 @@
 import styles from "../Sidebar.module.css";
 
-export default function SceneConfigControls({ showGrid, setShowGrid, showWireframe, setShowWireframe, autoRotate, setAutoRotate, bgColor, setBgColor }) {
+export default function SceneConfigControls({ 
+  showGrid, setShowGrid, 
+  showWireframe, setShowWireframe, 
+  autoRotate, setAutoRotate, 
+  bgColor, setBgColor,
+  explodeStrength, setExplodeStrength
+}) {
   return (
     <div className={styles.switchGroupMobile}>
       <label className={styles.controlRow}>
@@ -27,6 +33,20 @@ export default function SceneConfigControls({ showGrid, setShowGrid, showWirefra
       <label className={styles.controlRow}>
         <span>Color</span>
         <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className={styles.colorPick} />
+      </label>
+
+      {/* 👇 Slider de explosión */}
+      <label className={styles.controlRow}>
+        <span>Explosión</span>
+        <input
+          type="range"
+          min={0}
+          max={3}
+          step={0.01}
+          value={explodeStrength}
+          onChange={(e) => setExplodeStrength(parseFloat(e.target.value))}
+          className={styles.slider}
+        />
       </label>
     </div>
   );

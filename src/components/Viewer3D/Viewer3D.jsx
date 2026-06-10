@@ -4,17 +4,14 @@ import { Scene } from "./components/Scene";
 import styles from "./Viewer3D.module.css";
 
 export default function Viewer3D({ 
-  modelUrl, modelExt, showGrid, showWireframe, envPreset, bgColor, autoRotate 
+  modelUrl, modelExt, showGrid, showWireframe, envPreset, bgColor, autoRotate, explodeStrength
 }) {
   const [stats, setStats] = useState(null);
 
-  // Resetea las estadísticas cuando cambia el modelo
   useEffect(() => { setStats(null); }, [modelUrl]);
 
   return (
     <main className={styles.canvasWrap} style={{ backgroundColor: bgColor }}>
-      
-      {/* Empty State */}
       {!modelUrl && (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>◈</div>
@@ -22,7 +19,6 @@ export default function Viewer3D({
         </div>
       )}
 
-      {/* Renderizador WebGL */}
       <Canvas 
         shadows 
         camera={{ position: [0, 1.5, 4], fov: 45 }}
@@ -41,11 +37,11 @@ export default function Viewer3D({
           envPreset={envPreset}
           onStats={setStats}
           autoRotate={autoRotate}
-          bgColor={bgColor} // El bgColor solo controla el fondo HTML de la app
+          bgColor={bgColor}
+          explodeStrength={explodeStrength}
         />
       </Canvas>
 
-      {/* HUD de Estadísticas */}
       {stats && (
         <div className={styles.statsHud}>
           <span className={styles.statsCount}>▲ {stats.polygons}</span> polígonos
