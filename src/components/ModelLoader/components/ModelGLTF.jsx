@@ -116,7 +116,7 @@ export default function ModelGLTF({ url, onStats, showWireframe, explodeStrength
       transparentMat.opacity = 0.25;
       child.material = transparentMat;
 
-      const edges = new THREE.EdgesGeometry(child.geometry, 20);
+      const edges = new THREE.EdgesGeometry(child.geometry, 5);
       const line = new THREE.LineSegments(
         edges,
         new THREE.LineBasicMaterial({

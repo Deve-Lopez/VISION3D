@@ -357,13 +357,24 @@
   .dropFile { margin-top: 0 !important; font-size: 11px; }
 
   /* Ajuste de dimensiones de la lista de archivos de la nube */
-  .cloudList {
-    max-height: 75px !important;
-    padding: 4px !important;
-    gap: 4px;
-  }
-  .cloudItem { padding: 6px 8px !important; font-size: 11px !important; }
+/* Ajuste de dimensiones de la lista de archivos de la nube */
+.cloudList {
+  max-height: 110px !important;      /* Incrementamos un poco el espacio útil */
+  overflow-y: auto !important;       /* FORZAMOS el scroll vertical si hay muchos modelos */
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 6px !important;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en móviles */
+}
 
+.cloudItem { 
+  padding: 8px 10px !important; 
+  font-size: 11px !important; 
+  flex-shrink: 0 !important;         /* EVITA que los botones se aplasten entre sí */
+  min-height: 32px !important;       /* Le da un tamaño mínimo real para el dedo */
+  display: block !important;
+}
   /* Interruptores distribuidos proporcionalmente en horizontal */
   .switchGroupMobile {
     display: flex !important;
