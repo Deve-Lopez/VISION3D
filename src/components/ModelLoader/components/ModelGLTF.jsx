@@ -26,27 +26,14 @@ const scene = useMemo(() => {
   const targetStrengthRef = useRef(0);
   const currentStrengthRef = useRef(0);
 
-useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (groupRef.current && !normalized.current) {
       normalized.current = true;
-      
-      // --- EL ANTÍDOTO ---
-      // 1. Reseteamos la escala, rotación y posición del grupo a sus valores de fábrica
-      groupRef.current.scale.set(1, 1, 1);
-      groupRef.current.position.set(0, 0, 0);
-      groupRef.current.rotation.set(0, 0, 0);
-      
-      // 2. Forzamos a Three.js a asimilar este reset antes de medir nada
-      groupRef.current.updateMatrixWorld(true);
-      // -------------------
-
-      // 3. Ahora sí, normalizamos de forma segura porque empezamos desde cero
       normalizeObject(groupRef.current);
-      
       if (onStats) onStats(calculateStats(groupRef.current));
     }
   }, [scene, onStats]);
-  
+
   useEffect(() => {
     normalized.current = false;
     originsRef.current.clear();

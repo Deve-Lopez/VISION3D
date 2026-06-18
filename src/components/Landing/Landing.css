@@ -1,7 +1,8 @@
 /* Landing.css */
 .landing-container {
   min-height: 100vh;
-  background-color: #020617; /* Fondo súper oscuro */
+  background-color: #020617;
+  /* Fondo súper oscuro */
   color: #f1f5f9;
   font-family: system-ui, -apple-system, sans-serif;
   display: flex;
@@ -147,4 +148,17 @@
   font-size: 0.875rem;
   margin: 0;
   line-height: 1.6;
+}
+
+/* Añade esto a tu Landing.css */
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  /* Ajuste sutil de espacio */
+}
+
+.logo-icon {
+  flex-shrink: 0;
+  object-fit: contain;
 }

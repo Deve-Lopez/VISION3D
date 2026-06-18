@@ -4,10 +4,19 @@ import "./Landing.css"; // ¡Importante importar el CSS que vamos a crear!
 export default function Landing({ onLaunch }) {
   return (
     <div className="landing-container">
-      
+
       {/* CABECERA */}
+      {/* CABECERA CORREGIDA EN YOUR LANDING.JSX */}
       <header className="landing-header">
         <div className="logo-group">
+          {/* Cargamos directamente tu archivo original para que sea idéntico */}
+          <img
+            src="/favicon.svg"
+            alt="VISION3D Logo"
+            className="logo-icon"
+            style={{ width: "24px", height: "24px", display: "block" }}
+          />
+
           <span className="logo-text">VISION3D</span>
           <span className="version-badge">Portfolio</span>
         </div>
@@ -21,16 +30,16 @@ export default function Landing({ onLaunch }) {
       {/* HERO SECTION */}
       <main className="hero-section">
         <h1 className="hero-title">
-          Visualiza e inspecciona modelos <span>WebGL</span>
+          Visualiza e inspecciona modelos <span>3D Gratis</span>
         </h1>
         <p className="hero-subtitle">
-          Una herramienta ligera desarrollada en React Three Fiber para cargar, analizar estadísticas y explotar mallas de archivos glTF/GLB en tiempo real.
+          Convierte cualquier archivo (GLB, GLTF, STL, OBJ) en una experiencia interactiva al instante. Accede a tus proyectos desde cualquier dispositivo, en cualquier momento.
         </p>
 
         {/* BOTÓN MÁGICO QUE ABRE EL DASHBOARD */}
         <div className="cta-container">
           <button className="cta-button" onClick={onLaunch}>
-            Abrir Visor 3D
+            Probar ahora / Empezar gratis.
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
