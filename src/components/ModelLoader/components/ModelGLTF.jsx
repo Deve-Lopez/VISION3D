@@ -1,4 +1,4 @@
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef, useLayoutEffect, useMemo } from "react"; // <-- Importa useMemo
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -7,7 +7,16 @@ import { calculateStats } from "../utils/stats";
 
 export default function ModelGLTF({ url, onStats, showWireframe, explodeStrength }) {
   const groupRef = useRef();
-  const { scene } = useGLTF(url, "https://www.gstatic.com/draco/versioned/decoders/1.5.5/");
+  
+  // 1. Cargamos el recurso original desde la caché de Drei
+  const { scene: originalScene } = useGLTF(url, "https://www.gstatic.com/draco/versioned/decoders/1.5.5/");
+  
+  // 2. ¡EL CAMBIO CLAVE!: Clonamos de forma profunda la escena para tener una copia limpia
+  // exclusiva para esta renderización. Así nunca mutamos la caché de useGLTF.
+const scene = useMemo(() => {
+  return originalScene.clone();
+}, [url, originalScene]);
+
   const normalized = useRef(false);
   const edgeLinesRef = useRef([]);
   const originalMaterialsRef = useRef(new Map());
@@ -17,14 +26,27 @@ export default function ModelGLTF({ url, onStats, showWireframe, explodeStrength
   const targetStrengthRef = useRef(0);
   const currentStrengthRef = useRef(0);
 
-  useLayoutEffect(() => {
+useLayoutEffect(() => {
     if (groupRef.current && !normalized.current) {
       normalized.current = true;
+      
+      // --- EL ANTÍDOTO ---
+      // 1. Reseteamos la escala, rotación y posición del grupo a sus valores de fábrica
+      groupRef.current.scale.set(1, 1, 1);
+      groupRef.current.position.set(0, 0, 0);
+      groupRef.current.rotation.set(0, 0, 0);
+      
+      // 2. Forzamos a Three.js a asimilar este reset antes de medir nada
+      groupRef.current.updateMatrixWorld(true);
+      // -------------------
+
+      // 3. Ahora sí, normalizamos de forma segura porque empezamos desde cero
       normalizeObject(groupRef.current);
+      
       if (onStats) onStats(calculateStats(groupRef.current));
     }
   }, [scene, onStats]);
-
+  
   useEffect(() => {
     normalized.current = false;
     originsRef.current.clear();

@@ -52,7 +52,7 @@ export const Scene = memo(function Scene({
       </group>
 
       <RotationUpdater autoRotate={autoRotate} modelRef={modelGroupRef} />
-      <CameraFitter modelUrl={modelUrl} />
+      <CameraFitter modelUrl={modelUrl} targetRef={modelGroupRef} />
       <Controls />
     </>
   );

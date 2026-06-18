@@ -11,6 +11,7 @@ import SceneConfigControls from "./components/SceneConfigControls";
 import SceneStyleSelector from "./components/SceneStyleSelector";
 
 export default function Sidebar({
+  onBack, // <-- Añadimos la prop aquí
   fileName, error, setError, setBlobUrl, setModelExt, setFileName, prevBlob,
   showGrid, setShowGrid, showWireframe, setShowWireframe,
   bgColor, setBgColor, envPreset, setEnvPreset,
@@ -47,6 +48,15 @@ export default function Sidebar({
 
   return (
     <aside className={styles.sidebar}>
+      
+      {/* NUEVO BOTÓN DE VOLVER RESPONSIVE */}
+      <button className={styles.btnBack} onClick={onBack}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Volver al inicio
+      </button>
+
       <div className={styles.logo}>
         <span className={styles.logoIcon}>◈</span>
         <span className={styles.logoText}>VISION3D</span>
@@ -83,7 +93,8 @@ export default function Sidebar({
             autoRotate={autoRotate} setAutoRotate={setAutoRotate}
             bgColor={bgColor} setBgColor={setBgColor}
             explodeStrength={explodeStrength} setExplodeStrength={setExplodeStrength}
-          />          <SceneStyleSelector
+          />          
+          <SceneStyleSelector
             sceneStyle={sceneStyle} setSceneStyle={setSceneStyle}
             envPreset={envPreset} setEnvPreset={setEnvPreset}
           />

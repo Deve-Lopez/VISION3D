@@ -3,7 +3,8 @@ import Sidebar from "../Sidebar/Sidebar";
 import Viewer3D from "../Viewer3D/Viewer3D";
 import styles from "./Dashboard.module.css";
 
-export default function Dashboard() {
+// ✅ ¡AQUÍ ESTÁ EL CAMBIO! Añade { onBack } dentro de los paréntesis
+export default function Dashboard({ onBack }) {
   const [blobUrl, setBlobUrl] = useState(null);
   const [modelExt, setModelExt] = useState(null);
   const [fileName, setFileName] = useState("");
@@ -16,7 +17,7 @@ export default function Dashboard() {
   const [envPreset, setEnvPreset] = useState("sunset");
   const [sceneStyle, setSceneStyle] = useState("estudio");
   const [autoRotate, setAutoRotate] = useState(false);
-  const [explodeStrength, setExplodeStrength] = useState(0); // 👈 0 = sin explotar
+  const [explodeStrength, setExplodeStrength] = useState(0);
 
   const [uploading, setUploading] = useState(false);
   const [shareUrl, setShareUrl] = useState(null);
@@ -24,6 +25,7 @@ export default function Dashboard() {
   return (
     <div className={styles.appDashboard}>
       <Sidebar
+        onBack={onBack}
         fileName={fileName}
         error={error}
         setError={setError}

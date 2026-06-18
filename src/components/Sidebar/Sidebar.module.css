@@ -295,6 +295,43 @@
   border: none;
 }
 
+
+/* Sidebar.module.css */
+
+.btnBack {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%; /* Ocupa todo el ancho disponible */
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(51, 65, 85, 0.5); /* Borde sutil */
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem; /* Padding generoso para el tacto en móviles */
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem; /* Separación con el logo */
+}
+
+.btnBack:hover, .btnBack:active {
+  background-color: rgba(45, 212, 191, 0.1); /* Fondo turquesa muy suave */
+  color: #2dd4bf; /* Texto turquesa */
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+.btnBack svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.btnBack:hover svg {
+  transform: translateX(-3px); /* Pequeña animación de la flecha al pasar el ratón */
+}
+
 /* ── 📱 ESTILOS RESPONSIVE PARA DISPOSITIVOS MÓVILES (CON CARRUSEL LATERAL) ── */
 @media (max-width: 768px) {
   .sidebar {
