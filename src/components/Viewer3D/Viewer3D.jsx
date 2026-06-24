@@ -4,7 +4,7 @@ import { Scene } from "./components/Scene";
 import styles from "./Viewer3D.module.css";
 
 export default function Viewer3D({ 
-  modelUrl, modelExt, showGrid, showWireframe, envPreset, bgColor, autoRotate, explodeStrength
+  modelUrl, modelExt, showGrid, showWireframe, envPreset, bgColor, autoRotate
 }) {
   const [stats, setStats] = useState(null);
 
@@ -38,7 +38,6 @@ export default function Viewer3D({
           onStats={setStats}
           autoRotate={autoRotate}
           bgColor={bgColor}
-          explodeStrength={explodeStrength}
         />
       </Canvas>
 

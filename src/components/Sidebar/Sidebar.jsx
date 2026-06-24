@@ -11,12 +11,12 @@ import SceneConfigControls from "./components/SceneConfigControls";
 import SceneStyleSelector from "./components/SceneStyleSelector";
 
 export default function Sidebar({
-  onBack, // <-- Añadimos la prop aquí
+  onBack,
   fileName, error, setError, setBlobUrl, setModelExt, setFileName, prevBlob,
   showGrid, setShowGrid, showWireframe, setShowWireframe,
   bgColor, setBgColor, envPreset, setEnvPreset,
   uploading, setUploading, setShareUrl,
-  sceneStyle, setSceneStyle, autoRotate, setAutoRotate, explodeStrength, setExplodeStrength
+  sceneStyle, setSceneStyle, autoRotate, setAutoRotate
 }) {
   const [cloudModels, setCloudModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(false);
@@ -92,7 +92,6 @@ export default function Sidebar({
             showWireframe={showWireframe} setShowWireframe={setShowWireframe}
             autoRotate={autoRotate} setAutoRotate={setAutoRotate}
             bgColor={bgColor} setBgColor={setBgColor}
-            explodeStrength={explodeStrength} setExplodeStrength={setExplodeStrength}
           />          
           <SceneStyleSelector
             sceneStyle={sceneStyle} setSceneStyle={setSceneStyle}

@@ -3,7 +3,6 @@ import Sidebar from "../Sidebar/Sidebar";
 import Viewer3D from "../Viewer3D/Viewer3D";
 import styles from "./Dashboard.module.css";
 
-// ✅ ¡AQUÍ ESTÁ EL CAMBIO! Añade { onBack } dentro de los paréntesis
 export default function Dashboard({ onBack }) {
   const [blobUrl, setBlobUrl] = useState(null);
   const [modelExt, setModelExt] = useState(null);
@@ -17,7 +16,6 @@ export default function Dashboard({ onBack }) {
   const [envPreset, setEnvPreset] = useState("sunset");
   const [sceneStyle, setSceneStyle] = useState("estudio");
   const [autoRotate, setAutoRotate] = useState(false);
-  const [explodeStrength, setExplodeStrength] = useState(0);
 
   const [uploading, setUploading] = useState(false);
   const [shareUrl, setShareUrl] = useState(null);
@@ -48,8 +46,6 @@ export default function Dashboard({ onBack }) {
         setShareUrl={setShareUrl}
         autoRotate={autoRotate}
         setAutoRotate={setAutoRotate}
-        explodeStrength={explodeStrength}
-        setExplodeStrength={setExplodeStrength}
       />
       
       <Viewer3D
@@ -60,7 +56,6 @@ export default function Dashboard({ onBack }) {
         envPreset={envPreset}
         bgColor={bgColor}
         autoRotate={autoRotate}
-        explodeStrength={explodeStrength}
       />
     </div>
   );
